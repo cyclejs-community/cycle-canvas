@@ -1,0 +1,25 @@
+{
+  "name": "cycle-hot-reloading-example",
+  "version": "0.0.1",
+  "description": "A Cycle.js starter project with hot reloading using Browserify",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha --compilers js:babel-register"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Widdershin/cycle-hot-reloading-example.git"
+  },
+  "keywords": [
+    "hot",
+    "reloading",
+    "cycle.js",
+    "happiness"
+  ],
+  "author": "Nick Johnstone",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Widdershin/cycle-hot-reloading-example/issues"
+  },
+  "homepage": "https://github.com/Widdershin/cycle-hot-reloading-example"
+}
