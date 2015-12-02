@@ -1,5 +1,5 @@
 # cycle-hot-reloading-example
-A Cycle.js starter project with hot reloading using browserify and browserify-hmr
+A Cycle.js starter project with hot reloading using browserify and browserify-hmr.
 
 Usage
 ---
@@ -19,6 +19,6 @@ You can then go into `src/app.js` and change that text, and you should see the r
 
 You can also change the styles in `styles.css` and it will live reload.
 
-This is made possible by [AgentME/browserify-hmr](/AgentME/browserify-hmr), along with mattdesl's excellent [budo](/mattdesl/budo) development server. All of the hot reloading configuration is done in `index.js`, and the key part is that the old Cycle application is diposed every time the code changes.
+This is made possible by [AgentME/browserify-hmr](/AgentME/browserify-hmr), along with mattdesl's excellent [budo](/mattdesl/budo) development server. All of the hot reloading configuration is done in `index.js`. The key part is that the old Cycle application is diposed every time the code changes.
 
 
