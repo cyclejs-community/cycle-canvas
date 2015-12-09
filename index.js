@@ -1,19 +1,19 @@
 import {run} from '@cycle/core';
 import {makeDOMDriver} from '@cycle/dom';
+import restart from 'cycle-restart';
 
-import app from './src/app';
+var app = require('./src/app').default;
 
 const drivers = {
   DOM: makeDOMDriver('.app')
 };
 
-const {sinks, sources} = run(app, drivers);
+const {sources} = run(app, drivers);
 
 if (module.hot) {
-  module.hot.accept();
-
-  module.hot.dispose(() => {
-    sinks.dispose();
-    sources.dispose();
+  module.hot.accept('./src/app', (stuff) => {
+    app = require('./src/app').default;
+    console.log('wow', stuff);
+    restart(app, sources, drivers);
   });
 }
