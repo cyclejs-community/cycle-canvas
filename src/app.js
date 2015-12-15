@@ -1,6 +1,9 @@
+import isolate from '@cycle/isolate';
 import {div, button} from '@cycle/dom';
 
-export default function App ({DOM}) {
+import {Observable} from 'rx';
+
+function Counter ({DOM}) {
   const add$ = DOM
     .select('.add')
     .events('click')
@@ -23,5 +26,25 @@ export default function App ({DOM}) {
         button('.subtract', '-')
       ])
     )
+  };
+}
+
+export default function App ({DOM}) {
+  const counter1 = isolate(Counter)({DOM});
+  const counter2 = isolate(Counter)({DOM});
+
+  const vtree$ = Observable.combineLatest(
+    counter1.DOM,
+    counter2.DOM,
+    (counter1DOM, counter2DOM) => (
+      div('.app', [
+        counter1DOM,
+        counter2DOM
+      ])
+    )
+  );
+
+  return {
+    DOM: vtree$
   };
 }
