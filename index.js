@@ -11,9 +11,9 @@ const drivers = {
 const {sources} = run(app, drivers);
 
 if (module.hot) {
-  module.hot.accept('./src/app', (stuff) => {
+  module.hot.accept('./src/app', () => {
     app = require('./src/app').default;
-    console.log('wow', stuff);
+
     restart(app, sources, drivers);
   });
 }
