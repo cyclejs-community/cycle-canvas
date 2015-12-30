@@ -32,7 +32,7 @@ git checkout -b gh-pages
 npm run bundle
 git add .
 git commit -m "Add bundled app"
-git push --set-upstream origin gh-pages
+git push origin gh-pages
 ```
 
 Then visit http://**username**.github.io/**repository**. Your site should be online within 5 minutes or so.
@@ -40,10 +40,10 @@ Then visit http://**username**.github.io/**repository**. Your site should be onl
 To update your site in future, just checkout back to the branch and repeat the process:
 ```bash
 git checkout gh-pages
-git pull origin master
+git merge master --no-edit
 npm run bundle
 git add .
 git commit -m "Update bundle"
-git push
+git push origin gh-pages
 ```
 
