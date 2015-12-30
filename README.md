@@ -40,6 +40,7 @@ Then visit http://**username**.github.io/**repository**. Your site should be onl
 To update your site in future, just checkout back to the branch and repeat the process:
 ```bash
 git checkout gh-pages
+git pull origin master
 npm run bundle
 git add .
 git commit -m "Update bundle"
