@@ -1,50 +1,65 @@
 import isolate from '@cycle/isolate';
-import {div, button} from '@cycle/dom';
+import {a, div, button, input} from '@cycle/dom';
 
 import {Observable} from 'rx';
 
-function Counter ({DOM}) {
-  const add$ = DOM
-    .select('.add')
-    .events('click')
-    .map(_ => +1);
+function searchWikipedia (term) {
+  return `https://api.github.com/search/repositories?q=${term}`;
+}
 
-  const subtract$ = DOM
-    .select('.subtract')
-    .events('click')
-    .map(_ => -1);
+function renderResult (result) {
+  return (
+    div('.result', [
+      div('.result-name', [
+        a({href: `https://github.com/${result.full_name}`}, result.full_name),
+        ` - ${result.stargazers_count} ★`
+      ]),
+      div('.result-description', result.description)
+    ])
+  );
+}
 
-  const count$ = add$.merge(subtract$)
-    .scan((total, change) => total + change)
-    .startWith(0);
+function sortedByStars (results) {
+  return results
+    .sort((result, result2) => parseInt(result2.stargazers_count, 10) - parseInt(result.stargazers_count, 10))
+}
+
+function WikipediaSearchBox ({DOM, HTTP}) {
+  const results$ = HTTP.mergeAll()
+    .do(console.log.bind(console, 'response'))
+    .map(response => JSON.parse(response.text))
+    .startWith({items: []});
+
+  const searchTerm$ = DOM
+    .select('.search-term')
+    .events('input')
+    .debounce(300)
+    .map(ev => ev.target.value)
 
   return {
-    DOM: count$.map(count =>
-      div('.foo', [
-        div('.count', count.toString()),
-        button('.add', '+'),
-        button('.subtract', '-')
+    DOM: results$.do(console.log.bind(console, 'results')).map(results =>
+      div('.search-box', [
+        input('.search-term'),
+        div('.results', sortedByStars(results.items).map(renderResult))
       ])
-    )
+    ),
+
+    HTTP: searchTerm$.map(searchWikipedia)
   };
 }
 
-export default function App ({DOM}) {
-  const counter1 = isolate(Counter)({DOM});
-  const counter2 = isolate(Counter)({DOM});
+export default function App ({DOM, HTTP}) {
+  const searchBox = isolate(WikipediaSearchBox)({DOM, HTTP});
 
   const vtree$ = Observable.combineLatest(
-    counter1.DOM,
-    counter2.DOM,
-    (counter1DOM, counter2DOM) => (
-      div('.app', [
-        counter1DOM,
-        counter2DOM
-      ])
+    searchBox.DOM,
+    (...vtrees) => (
+      div('.app', vtrees)
     )
   );
 
   return {
-    DOM: vtree$
+    DOM: vtree$,
+    HTTP: searchBox.HTTP
   };
 }
