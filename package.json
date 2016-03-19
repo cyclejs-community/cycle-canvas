@@ -26,8 +26,10 @@
   "homepage": "https://github.com/Widdershin/cycle-hot-reloading-example",
   "dependencies": {
     "@cycle/core": "^6.0.0-rc2",
-    "@cycle/dom": "^8.0.0-rc3",
+    "@cycle/dom": "^9.0.1",
+    "@cycle/isolate": "^1.2.0",
     "babel-preset-es2015": "^6.1.18",
+    "cycle-restart": "0.0.14",
     "rx": "^4.0.7"
   },
   "devDependencies": {
