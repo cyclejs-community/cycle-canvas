@@ -12,22 +12,36 @@ function view (count) {
   );
 }
 
-export default function App ({DOM}) {
-  const add$ = DOM
-    .select('.add')
-    .events('click')
-    .map(ev => +1);
-
-  const subtract$ = DOM
-    .select('.subtract')
-    .events('click')
-    .map(ev => -1);
-
-  const count$ = add$.merge(subtract$)
-    .startWith(0)
-    .scan((total, change) => total + change);
-
+export default function App ({Canvas, Keys}) {
   return {
-    DOM: count$.map(view)
+    Canvas: Observable.just(
+      [
+        {
+          kind: 'rect',
+          x: 10,
+          y: 10,
+          width: 250,
+          height: 50,
+          draw: [
+            {fill: 'gray'},
+            {stroke: 'black', lineWidth: 2}
+          ],
+
+          children: [
+            {
+              kind: 'text',
+              x: 5,
+              y: 35,
+              value: 'This is a test',
+              font: '40px sanserif',
+              draw: [
+                {stroke: 'red'},
+                {fill: 'black'}
+              ]
+            }
+          ]
+        }
+      ]
+    )
   };
 }

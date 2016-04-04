@@ -1,5 +1,6 @@
 import {run} from '@cycle/core';
 import {makeDOMDriver} from '@cycle/dom';
+import {makeCanvasDriver} from './src/canvas-driver';
 import {restart, restartable} from 'cycle-restart';
 import isolate from '@cycle/isolate';
 
@@ -7,6 +8,7 @@ var app = require('./src/app').default;
 
 const drivers = {
   DOM: restartable(makeDOMDriver('.app'), {pauseSinksWhileReplaying: false}),
+  Canvas: restartable(makeCanvasDriver('.canvas'), {pauseSinksWhileReplaying: false})
 };
 
 const {sinks, sources} = run(app, drivers);
