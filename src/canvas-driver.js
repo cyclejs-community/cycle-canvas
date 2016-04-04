@@ -1,4 +1,8 @@
 function renderElement (context, element, parent) {
+  if (!element) {
+    return;
+  }
+
   if (!parent) {
     parent = {x: 0, y: 0};
   }
@@ -43,6 +47,8 @@ function renderElement (context, element, parent) {
       if (operation.lineWidth) {
         context.lineWidth = operation.lineWidth;
       }
+
+      context.textAlign = element.textAlign || 'left';
 
       if (operation.fill) {
         context.fillStyle = operation.fill || 'black';
