@@ -29,7 +29,9 @@ function startState () {
 
     pipes: [],
 
-    gameOver: false
+    gameOver: false,
+
+    score: 0
   };
 }
 
@@ -87,6 +89,31 @@ function renderGameOverSplash () {
   );
 }
 
+function renderScore (score) {
+  return (
+    rect({
+      x: 710,
+      y: 30,
+
+      width: 60,
+      height: 60,
+
+      draw: [
+        {fill: 'white'},
+        {stroke: 'black'}
+      ]
+    }, [
+      text({
+        value: Math.round(score),
+        font: '40pt Arial',
+        textAlign: 'center',
+        x: 30,
+        y: 50
+      })
+    ])
+  );
+}
+
 function view (state) {
   return (
     rect({draw: [{fill: 'skyblue'}]}, [
@@ -94,7 +121,9 @@ function view (state) {
 
       ..._.flatten(state.pipes.map(renderPipe)),
 
-      state.gameOver ? renderGameOverSplash() : null
+      state.gameOver ? renderGameOverSplash() : null,
+
+      renderScore(state.score)
     ])
   );
 }
@@ -126,8 +155,12 @@ function update (delta) {
 
     const gameOver = isColliding || isOffScreen;
 
+    const score = state.score + normalizedDelta * 0.01;
+
     return {
       ...state,
+
+      score,
 
       gameOver,
 
