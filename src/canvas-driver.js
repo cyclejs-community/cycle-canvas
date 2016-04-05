@@ -53,10 +53,6 @@ function renderElement (context, element, parent) {
 
   if (element.kind === 'text') {
     element.draw.forEach(operation => {
-      if (operation.lineWidth) {
-        context.lineWidth = operation.lineWidth;
-      }
-
       context.textAlign = element.textAlign || 'left';
 
       if (operation.fill) {
