@@ -15,13 +15,16 @@ function startState () {
     bird: {
       x: 90,
       y: 30,
+
+      width: 30,
+      height: 30,
+
       velocity: {
         x: 0,
         y: 0
       },
-      flapCooldown: FLAP_COOLDOWN,
-      width: 30,
-      height: 30
+
+      flapCooldown: FLAP_COOLDOWN
     },
 
     pipes: [],
@@ -64,22 +67,17 @@ function renderGameOverSplash () {
     font: '72pt Arial',
     textAlign: 'center',
 
-    value: 'Game Over',
-
-    draw: [
-      {fill: 'black'}
-    ]
+    value: 'Game Over'
   };
 
   const subTextProps = {
-    value: 'Press Space to play again',
-    font: '25pt Arial',
-    textAlign: 'center',
     x: 0,
     y: 50,
-    draw: [
-      {fill: 'black'}
-    ]
+
+    font: '25pt Arial',
+    textAlign: 'center',
+
+    value: 'Press Space to play again'
   };
 
   return (
@@ -101,6 +99,20 @@ function view (state) {
   );
 }
 
+function updateBird (bird, normalizedDelta) {
+  return {
+    ...bird,
+
+    velocity: {
+      y: bird.velocity.y + GRAVITY * normalizedDelta
+    },
+
+    y: bird.y + bird.velocity.y * normalizedDelta,
+
+    flapCooldown: bird.flapCooldown - normalizedDelta
+  };
+}
+
 function update (delta) {
   const normalizedDelta = delta / FRAME_RATE;
 
@@ -109,19 +121,20 @@ function update (delta) {
       return state;
     }
 
-    state.bird.velocity.y += GRAVITY * normalizedDelta;
+    const isColliding = state.pipes.some(pipe => collide(state.bird, pipe));
+    const isOffScreen = state.bird.y > 600;
 
-    state.bird.y += state.bird.velocity.y * normalizedDelta;
+    const gameOver = isColliding || isOffScreen;
 
-    state.bird.flapCooldown -= normalizedDelta;
+    return {
+      ...state,
 
-    state.pipes.forEach(pipe => pipe.x -= normalizedDelta);
+      gameOver,
 
-    if (state.pipes.some(pipe => collide(state.bird, pipe)) || state.bird.y > 600) {
-      state.gameOver = true;
-    }
+      bird: updateBird(state.bird, normalizedDelta),
 
-    return state;
+      pipes: state.pipes.map(pipe => ({...pipe, x: pipe.x - normalizedDelta}))
+    };
   };
 }
 
@@ -129,6 +142,7 @@ function flap () {
   return function (state) {
     if (state.bird.flapCooldown <= 0) {
       state.bird.velocity.y -= FLAP_IMPULSE;
+
       state.bird.flapCooldown = FLAP_COOLDOWN;
     }
 
@@ -137,12 +151,13 @@ function flap () {
 }
 
 function spawnPipe (i) {
-  const offset = Math.sin(i) * 50;
+  const offset = Math.sin(i) * 80;
   const gap = 200;
 
   return function (state) {
     return {
       ...state,
+
       pipes: state.pipes.concat([
         {x: 800, y: -10, width: 60, height: 310 + offset - gap / 2},
         {x: 800, y: 300 + gap / 2 + offset, width: 60, height: 300}
@@ -164,10 +179,15 @@ function resetGame () {
 export default function App ({Canvas, Keys, Animation}) {
   const initialState = startState();
 
-  const update$ = Animation.pluck('delta').map(update);
-  const flap$ = Keys.pressed('space').map(flap);
-  const resetGame$ = Keys.pressed('space').map(resetGame);
+  const space$  = Keys.pressed('space');
+
+  const flap$ = space$.map(flap);
+
+  const resetGame$ = space$.map(resetGame);
+
   const spawnPipe$ = Observable.interval(4000).startWith(0).map(spawnPipe);
+
+  const update$ = Animation.pluck('delta').map(update);
 
   const action$ = Observable.merge(
     update$,

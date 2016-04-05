@@ -99,7 +99,13 @@ export function rect (opts, children) {
 }
 
 export function text (opts, children) {
-  return c('text', opts, children);
+  const defaults = {
+    draw: [
+      {fill: 'black'}
+    ]
+  };
+
+  return c('text', {...defaults, ...opts}, children);
 }
 
 export function makeCanvasDriver (selector, {width, height}) {
