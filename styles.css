@@ -5,4 +5,24 @@ html, body {
 
 canvas {
   border: 1px solid black;
+
+  width: 800px;
+  height: 600px;
+}
+
+body {
+  display: flex;
+
+  background: #222;
+
+  color: white;
+
+  font: 'sans-serif';
+  font-size: 40px;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  flex-direction: column;
 }
