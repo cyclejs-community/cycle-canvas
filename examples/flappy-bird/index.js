@@ -1,8 +1,6 @@
 import {run} from '@cycle/core';
 import {makeCanvasDriver} from '../../src/canvas-driver';
 import {makeAnimationDriver} from 'cycle-animation-driver';
-import {restart, restartable} from 'cycle-restart';
-import isolate from '@cycle/isolate';
 import keycode from 'keycode';
 import {Observable} from 'rx';
 
@@ -29,17 +27,9 @@ function makeKeysDriver () {
 }
 
 const drivers = {
-  Animation: restartable(makeAnimationDriver()),
-  Canvas: restartable(makeCanvasDriver('.canvas', {width: 800, height: 600}), {pauseSinksWhileReplaying: false}),
-  Keys: restartable(makeKeysDriver())
+  Animation: makeAnimationDriver(),
+  Canvas: makeCanvasDriver('.canvas', {width: 800, height: 600}),
+  Keys: makeKeysDriver()
 };
 
-const {sinks, sources} = run(app, drivers);
-
-if (module.hot) {
-  module.hot.accept('./app', () => {
-    app = require('./app').default;
-
-    restart(app, drivers, {sinks, sources}, isolate);
-  });
-}
+run(app, drivers);
