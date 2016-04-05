@@ -1,4 +1,4 @@
-import {div, button} from '@cycle/dom';
+import {rect, text} from './canvas-driver';
 
 import {Observable} from 'rx';
 
@@ -31,63 +31,74 @@ function startState () {
 }
 
 function renderPipe (pipe) {
-  return {
-    kind: 'rect',
-    x: pipe.x,
-    y: pipe.y,
-    width: pipe.width,
-    height: pipe.height,
-    draw: [
-      {fill: 'lime'},
-      {stroke: 'black', lineWidth: 4}
-    ]
-  };
+  return (
+    rect({
+      ...pipe,
+
+      draw: [
+        {fill: 'lime'},
+        {stroke: 'black', lineWidth: 4}
+      ]
+    })
+  );
 }
 
-function view (state) {
-  const gameOverSplash = {
-    kind: 'text',
-    x: 400,
-    y: 300,
-    value: 'Game Over',
-    font: '72pt Arial',
-    textAlign: 'center',
-    draw: [
-      {fill: 'black'}
-    ],
+function renderBird (bird) {
+  return (
+    rect({
+      ...bird,
 
-    children: [
-      {
-        kind: 'text',
-        value: 'Press Space to play again',
-        font: '25pt Arial',
-        textAlign: 'center',
-        x: 0,
-        y: 50,
-        draw: [
-          {fill: 'black'}
-        ]
-      }
-    ]
-  };
-
-  return [
-    {
-      kind: 'rect',
-      x: state.bird.x,
-      y: state.bird.y,
-      width: state.bird.width,
-      height: state.bird.height,
       draw: [
         {fill: 'orange'},
         {stroke: 'black', lineWidth: 2}
       ]
-    },
+    })
+  );
+}
 
-    ..._.flatten(state.pipes.map(renderPipe)),
+function renderGameOverSplash () {
+  const props = {
+    x: 400,
+    y: 300,
 
-    state.gameOver ? gameOverSplash : null
-  ];
+    font: '72pt Arial',
+    textAlign: 'center',
+
+    value: 'Game Over',
+
+    draw: [
+      {fill: 'black'}
+    ]
+  };
+
+  const subTextProps = {
+    value: 'Press Space to play again',
+    font: '25pt Arial',
+    textAlign: 'center',
+    x: 0,
+    y: 50,
+    draw: [
+      {fill: 'black'}
+    ]
+  };
+
+  return (
+    rect(props, [
+      text({value: 'Press Space to play again', ...subTextProps})
+    ])
+  );
+}
+
+function view (state) {
+  return (
+    rect({draw: [{fill: 'skyblue'}]}, [
+      renderBird(state.bird),
+
+      ..._.flatten(state.pipes.map(renderPipe)),
+
+      state.gameOver ? renderGameOverSplash() : null
+    ])
+  );
 }
 
 function update (delta) {
@@ -106,8 +117,7 @@ function update (delta) {
 
     state.pipes.forEach(pipe => pipe.x -= normalizedDelta);
 
-    if (state.pipes.some(pipe => collide(state.bird, pipe))
-        || state.bird.y > 600) {
+    if (state.pipes.some(pipe => collide(state.bird, pipe)) || state.bird.y > 600) {
       state.gameOver = true;
     }
 
@@ -129,17 +139,15 @@ function flap () {
 function spawnPipe (i) {
   const offset = Math.sin(i) * 50;
   const gap = 200;
+
   return function (state) {
-    return Object.assign(
-      {},
-      state,
-      {
-        pipes: state.pipes.concat([
-          {x: 800, y: -10, width: 60, height: 310 + offset - gap / 2},
-          {x: 800, y: 300 + gap / 2 + offset, width: 60, height: 300}
-        ])
-      }
-    );
+    return {
+      ...state,
+      pipes: state.pipes.concat([
+        {x: 800, y: -10, width: 60, height: 310 + offset - gap / 2},
+        {x: 800, y: 300 + gap / 2 + offset, width: 60, height: 300}
+      ])
+    };
   };
 }
 
@@ -150,7 +158,7 @@ function resetGame () {
     }
 
     return state;
-  }
+  };
 }
 
 export default function App ({Canvas, Keys, Animation}) {

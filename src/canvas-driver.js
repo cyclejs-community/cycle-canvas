@@ -18,26 +18,35 @@ function renderElement (context, element, parent) {
     element.draw.forEach(operation => {
       context.lineWidth = operation.lineWidth || 1;
 
+      if (operation.clear) {
+        context.clearRect(
+          realX,
+          realY,
+          element.width,
+          element.height
+        );
+      }
+
       if (operation.fill) {
         context.fillStyle = operation.fill || 'black';
 
         context.fillRect(
-            realX,
-            realY,
-            element.width,
-            element.height
-            );
+          realX,
+          realY,
+          element.width,
+          element.height
+        );
       }
 
       if (operation.stroke) {
         context.strokeStyle = operation.stroke || 'black';
 
         context.strokeRect(
-            realX,
-            realY,
-            element.width,
-            element.height
-            );
+          realX,
+          realY,
+          element.width,
+          element.height
+        );
       }
     });
   }
@@ -54,27 +63,43 @@ function renderElement (context, element, parent) {
         context.fillStyle = operation.fill || 'black';
 
         context.fillText(
-            element.value,
-            realX,
-            realY,
-            element.width
-            );
+          element.value,
+          realX,
+          realY,
+          element.width
+        );
       }
 
       if (operation.stroke) {
         context.strokeStyle = operation.stroke || 'black';
 
         context.strokeText(
-            element.value,
-            realX,
-            realY,
-            element.width
-            );
+          element.value,
+          realX,
+          realY,
+          element.width
+        );
       }
     });
   }
 
   element.children && element.children.forEach(child => renderElement(context, child, element))
+}
+
+export function c (kind, opts, children) {
+  return Object.assign(
+    {},
+    opts,
+    {kind, children}
+  );
+}
+
+export function rect (opts, children) {
+  return c('rect', opts, children);
+}
+
+export function text (opts, children) {
+  return c('text', opts, children);
 }
 
 export function makeCanvasDriver (selector, {width, height}) {
@@ -85,12 +110,26 @@ export function makeCanvasDriver (selector, {width, height}) {
 
   const context = canvas.getContext('2d');
 
-
   return function canvasDriver (sink$) {
-    return sink$.subscribe(vtree => {
-      context.clearRect(0, 0, canvas.width, canvas.height);
+    return sink$.subscribe(rootElement => {
+      const defaults = {
+        kind: 'rect',
+        x: 0,
+        y: 0,
+        width: canvas.width,
+        height: canvas.height,
+        draw: [
+          {clear: true}
+        ]
+      };
 
-      vtree.forEach(element => renderElement(context, element));
+      const rootElementWithDefaults = Object.assign(
+        {},
+        defaults,
+        rootElement
+      );
+
+      renderElement(context, rootElementWithDefaults);
     });
   };
 }
