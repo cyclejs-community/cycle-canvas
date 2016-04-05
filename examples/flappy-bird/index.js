@@ -1,12 +1,12 @@
 import {run} from '@cycle/core';
-import {makeCanvasDriver} from './src/canvas-driver';
+import {makeCanvasDriver} from '../../src/canvas-driver';
 import {makeAnimationDriver} from 'cycle-animation-driver';
 import {restart, restartable} from 'cycle-restart';
 import isolate from '@cycle/isolate';
 import keycode from 'keycode';
 import {Observable} from 'rx';
 
-var app = require('./src/app').default;
+var app = require('./app').default;
 
 function makeKeysDriver () {
   const keydown$ = Observable.fromEvent(document, 'keydown');
@@ -37,8 +37,8 @@ const drivers = {
 const {sinks, sources} = run(app, drivers);
 
 if (module.hot) {
-  module.hot.accept('./src/app', () => {
-    app = require('./src/app').default;
+  module.hot.accept('./app', () => {
+    app = require('./app').default;
 
     restart(app, drivers, {sinks, sources}, isolate);
   });

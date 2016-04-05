@@ -103,7 +103,13 @@ export function text (opts, children) {
 }
 
 export function makeCanvasDriver (selector, {width, height}) {
-  const canvas = document.querySelector(selector);
+  let canvas = document.querySelector(selector);
+
+  if (!canvas) {
+    canvas = document.createElement('canvas');
+
+    document.body.appendChild(canvas);
+  }
 
   canvas.width = width;
   canvas.height = height;

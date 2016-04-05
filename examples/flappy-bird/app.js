@@ -1,4 +1,4 @@
-import {rect, text} from './canvas-driver';
+import {rect, text} from '../../src/canvas-driver';
 
 import {Observable} from 'rx';
 
@@ -83,7 +83,7 @@ function renderGameOverSplash () {
   };
 
   return (
-    rect(props, [
+    text(props, [
       text({value: 'Press Space to play again', ...subTextProps})
     ])
   );
