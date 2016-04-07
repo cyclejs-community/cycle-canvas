@@ -62,3 +62,6 @@ Looks like this:
 
 ![img](http://i.imgur.com/1LCZxrg.png)
 
+Also check out the [flappy bird example](http://widdersh.in/cycle-canvas).
+
+You can find the source for flappy bird [here](https://github.com/Widdershin/cycle-canvas/tree/master/examples/flappy-bird).
