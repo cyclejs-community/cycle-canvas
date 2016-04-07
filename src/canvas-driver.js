@@ -83,6 +83,10 @@ function renderElement (context, element, parent) {
 }
 
 export function c (kind, opts, children) {
+  if (opts.children) {
+    children = opts.children;
+  }
+
   return Object.assign(
     {},
     opts,
