@@ -25,8 +25,8 @@ function main () {
         x: 10,
         y: 10,
 
-        width: 50,
-        height: 40,
+        width: 160,
+        height: 100,
 
         draw: [
           {fill: 'purple'}
@@ -34,18 +34,25 @@ function main () {
 
         children: [
           text({
-            x: 5,
-            y: 5,
-            value: 'Hello World!'
+            x: 15,
+            y: 25,
+
+            value: 'Hello World!',
+
+            font: '18pt Arial',
+
+            draw: [
+              {fill: 'white'}
+            ]
           })
         ]
       })
     )
-  }
+  };
 }
 
 const drivers = {
-  Canvas: makeCanvasDriver()
+  Canvas: makeCanvasDriver(null, {width: 800, height: 600})
 };
 
 run(main, drivers);
