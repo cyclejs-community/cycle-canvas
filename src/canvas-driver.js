@@ -7,79 +7,114 @@ function renderElement (context, element, parent) {
     parent = {x: 0, y: 0};
   }
 
-  const realX = parent.x + element.x;
-  const realY = parent.y + element.y;
-
+  const origin = {
+    x: element.x ? parent.x + element.x : parent.x,
+    y: element.y ? parent.y + element.y : parent.y
+  };
+  
   if (element.font) {
     context.font = element.font;
   }
 
   if (element.kind === 'rect') {
-    element.draw.forEach(operation => {
-      context.lineWidth = operation.lineWidth || 1;
-
-      if (operation.clear) {
-        context.clearRect(
-          realX,
-          realY,
-          element.width,
-          element.height
-        );
-      }
-
-      if (operation.fill) {
-        context.fillStyle = operation.fill || 'black';
-
-        context.fillRect(
-          realX,
-          realY,
-          element.width,
-          element.height
-        );
-      }
-
-      if (operation.stroke) {
-        context.strokeStyle = operation.stroke || 'black';
-
-        context.strokeRect(
-          realX,
-          realY,
-          element.width,
-          element.height
-        );
-      }
-    });
+    drawRect(context, element, origin);
   }
 
   if (element.kind === 'text') {
-    element.draw.forEach(operation => {
-      context.textAlign = element.textAlign || 'left';
+    drawText(context, element, origin);
+  }
 
-      if (operation.fill) {
-        context.fillStyle = operation.fill || 'black';
-
-        context.fillText(
-          element.value,
-          realX,
-          realY,
-          element.width
-        );
-      }
-
-      if (operation.stroke) {
-        context.strokeStyle = operation.stroke || 'black';
-
-        context.strokeText(
-          element.value,
-          realX,
-          realY,
-          element.width
-        );
-      }
-    });
+  if (element.kind === 'line') {
+    drawLine(context, element, origin);
   }
 
   element.children && element.children.forEach(child => renderElement(context, child, element))
+}
+
+function drawLine(context, element, origin) {
+  context.lineWidth = element.style.lineWidth || 1;
+  context.lineCap = element.style.lineCap || 'butt';
+  context.lineJoin = element.style.lineJoin || 'miter';
+  context.strokeStyle = element.style.strokeStyle || 'black';
+
+  const lineDash = element.style.lineDash;
+
+  if (lineDash && lineDash.constructor === Array) {
+    context.setLineDash(element.style.lineDash);
+  }
+
+  context.beginPath();
+  context.moveTo(origin.x, origin.y);
+  element.points.forEach(point => {
+    context.lineTo(origin.x + point.x, origin.y + point.y);
+  });
+  context.stroke();
+  context.setLineDash([]);
+}
+
+function drawRect(context, element, origin) {
+  element.draw.forEach(operation => {
+    context.lineWidth = operation.lineWidth || 1;
+
+    if (operation.clear) {
+      context.clearRect(
+          origin.x,
+          origin.y,
+          element.width,
+          element.height
+      );
+    }
+
+    if (operation.fill) {
+      context.fillStyle = operation.fill || 'black';
+
+      context.fillRect(
+          origin.x,
+          origin.y,
+          element.width,
+          element.height
+      );
+    }
+
+    if (operation.stroke) {
+      context.strokeStyle = operation.stroke || 'black';
+
+      context.strokeRect(
+          origin.x,
+          origin.y,
+          element.width,
+          element.height
+      );
+    }
+  });
+}
+
+function drawText(context, element, origin) {
+  element.draw.forEach(operation => {
+    context.textAlign = element.textAlign || 'left';
+
+    if (operation.fill) {
+      context.fillStyle = operation.fill || 'black';
+
+      context.fillText(
+          element.value,
+          origin.x,
+          origin.y,
+          element.width
+      );
+    }
+
+    if (operation.stroke) {
+      context.strokeStyle = operation.stroke || 'black';
+
+      context.strokeText(
+          element.value,
+          origin.x,
+          origin.y,
+          element.width
+      );
+    }
+  });
 }
 
 export function c (kind, opts, children) {
@@ -106,6 +141,10 @@ export function text (opts, children) {
   };
 
   return c('text', {...defaults, ...opts}, children);
+}
+
+export function line (opts, children) {
+  return c('line', opts, children);
 }
 
 export function makeCanvasDriver (selector, {width, height}) {
