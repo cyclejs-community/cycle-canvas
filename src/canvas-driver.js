@@ -43,8 +43,8 @@ function drawLine(context, element, origin) {
     context.setLineDash(element.style.lineDash);
   }
 
-  context.beginPath();
   context.moveTo(origin.x, origin.y);
+  context.beginPath();
   element.points.forEach(point => {
     context.lineTo(origin.x + point.x, origin.y + point.y);
   });
@@ -144,7 +144,15 @@ export function text (opts, children) {
 }
 
 export function line (opts, children) {
-  return c('line', opts, children);
+  const defaults = {
+    style: {
+      lineWidth: 1,
+      lineCap: 'butt',
+      lineJoin: 'miter',
+      strokeStyle: 'black'
+    }
+  };
+  return c('line', {...defaults, ...opts}, children);
 }
 
 export function makeCanvasDriver (selector, {width, height}) {
