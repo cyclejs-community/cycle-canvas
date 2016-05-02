@@ -12,6 +12,8 @@ function renderElement (context, element, parent) {
     y: element.y ? parent.y + element.y : parent.y
   };
   
+  preDrawHooks(element, context);
+
   if (element.font) {
     context.font = element.font;
   }
@@ -27,6 +29,8 @@ function renderElement (context, element, parent) {
   if (element.kind === 'line') {
     drawLine(context, element, origin);
   }
+
+  postDrawHooks(context);
 
   element.children && element.children.forEach(child => renderElement(context, child, element))
 }
@@ -115,6 +119,26 @@ function drawText(context, element, origin) {
       );
     }
   });
+}
+
+function preDrawHooks(element, context) {
+  context.save();
+
+  if (element.translate) {
+    context.translate(element.translate.x, element.translate.y);
+  }
+
+  if (element.rotate) {
+    context.rotate(element.rotate);
+  }
+
+  if(element.scale) {
+    context.scale(element.scale.x, element.scale.y);
+  }
+}
+
+function postDrawHooks(context) {
+  context.restore();
 }
 
 export function c (kind, opts, children) {
