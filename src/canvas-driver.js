@@ -18,17 +18,15 @@ function renderElement (context, element, parent) {
     context.font = element.font;
   }
 
-  if (element.kind === 'rect') {
-    drawRect(context, element, origin);
-  }
+  const elementMapping = {
+    rect: drawRect,
+    text: drawText,
+    line: drawLine
+  };
 
-  if (element.kind === 'text') {
-    drawText(context, element, origin);
-  }
+  const elementFunction = elementMapping[element.kind];
 
-  if (element.kind === 'line') {
-    drawLine(context, element, origin);
-  }
+  elementFunction(context, element, origin);
 
   postDrawHooks(context);
 
