@@ -1,3 +1,88 @@
+function flatten (array) {
+  if (typeof array.reduce !== 'function') {
+    return array;
+  }
+
+  return array.reduce((flatArray, arrayElement) => flatArray.concat(flatten(arrayElement)), []);
+}
+
+function compact (array) {
+  return array.filter(element => element !== undefined && element !== null);
+}
+
+function translateRect (element, origin) {
+  return element.draw.map(operation => {
+    const operations = [
+      {set: 'lineWidth', value: operation.lineWidth || 1}
+    ];
+
+    if (operation.clear) {
+      operations.push({
+        call: 'clearRect',
+        args: [
+          origin.x,
+          origin.y,
+          element.width,
+          element.height
+        ]
+      });
+    }
+
+    if (operation.fill) {
+      operations.push({
+        set: 'fillStyle',
+        value: operation.fill || 'black'
+      });
+
+      operations.push({
+        call: 'fillRect',
+        args: [
+          origin.x,
+          origin.y,
+          element.width,
+          element.height
+        ]
+      });
+    }
+
+    // TODO - test and implement stroke
+    if (operation.stroke) {
+      context.strokeStyle = operation.stroke || 'black';
+
+      context.strokeRect(
+        origin.x,
+        origin.y,
+        element.width,
+        element.height
+      );
+    }
+
+    return operations;
+  });
+}
+
+export function translateVtreeToInstructions (element) {
+  const elementMapping = {
+    rect: translateRect
+  };
+
+  const instructions = [
+    elementMapping[element.kind](element, {x: 0, y: 0})
+  ];
+
+  return compact(flatten(instructions));
+}
+
+export function renderInstructionsToCanvas (instructions, context) {
+  instructions.forEach(instruction => {
+    if (instruction.set) {
+      context[instruction.set] = instruction.value;
+    } else if (instruction.call) {
+      context[instruction.call](...instruction.args);
+    }
+  });
+}
+
 function renderElement (context, element, parent) {
   if (!element) {
     return;
@@ -60,10 +145,10 @@ function drawRect (context, element, origin) {
 
     if (operation.clear) {
       context.clearRect(
-          origin.x,
-          origin.y,
-          element.width,
-          element.height
+        origin.x,
+        origin.y,
+        element.width,
+        element.height
       );
     }
 
@@ -71,10 +156,10 @@ function drawRect (context, element, origin) {
       context.fillStyle = operation.fill || 'black';
 
       context.fillRect(
-          origin.x,
-          origin.y,
-          element.width,
-          element.height
+        origin.x,
+        origin.y,
+        element.width,
+        element.height
       );
     }
 
@@ -82,10 +167,10 @@ function drawRect (context, element, origin) {
       context.strokeStyle = operation.stroke || 'black';
 
       context.strokeRect(
-          origin.x,
-          origin.y,
-          element.width,
-          element.height
+        origin.x,
+        origin.y,
+        element.width,
+        element.height
       );
     }
   });
