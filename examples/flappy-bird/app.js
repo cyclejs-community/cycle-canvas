@@ -49,13 +49,43 @@ function renderPipe (pipe) {
 }
 
 function renderBird (bird) {
+  const birdCenter = {
+    x: bird.x + bird.width / 2,
+    y: bird.y + bird.width / 2
+  };
+
+  const birdAngle = Math.atan(bird.velocity.y);
+
   return (
     rect({
+      transforms: [
+        {translate: birdCenter},
+        {rotate: birdAngle}
+      ],
       ...bird,
 
+      x: bird.width / -2,
+      y: bird.height / -2,
       draw: [
         {fill: 'orange'},
         {stroke: 'black', lineWidth: 2}
+      ]
+    }, [
+      renderBirdHead(bird)
+    ])
+  );
+}
+
+function renderBirdHead (bird) {
+  return (
+    rect({
+      x: bird.width * 0.9,
+      y: bird.height * (-0.3),
+      width: bird.width * 0.4,
+      height: bird.height * 0.4,
+      draw: [
+        {fill: 'orange'},
+        {stroke: 'black', lineWidth: 1}
       ]
     })
   );
