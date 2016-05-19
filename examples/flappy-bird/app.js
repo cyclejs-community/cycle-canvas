@@ -58,7 +58,7 @@ function renderBird (bird) {
 
   return (
     rect({
-      transforms: [
+      transformations: [
         {translate: birdCenter},
         {rotate: birdAngle}
       ],

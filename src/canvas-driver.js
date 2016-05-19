@@ -122,11 +122,11 @@ function drawText (context, element, origin) {
 function preDrawHooks (element, context) {
   context.save();
 
-  if (!element.transforms) {
+  if (!element.transformations) {
     return;
   }
 
-  element.transforms.forEach(transformation => {
+  element.transformations.forEach(transformation => {
     if (transformation.translate) {
       context.translate(transformation.translate.x, transformation.translate.y);
     }
