@@ -2,7 +2,7 @@
   "name": "cycle-canvas",
   "version": "0.1.0",
   "description": "A canvas driver for Cycle.js",
-  "main": "lib/canvas-driver.js",
+  "main": "src/canvas-driver.js",
   "scripts": {
     "start": "babel-node ./examples/flappy-bird/server.js",
     "test": "mocha --compilers js:babel-register",
