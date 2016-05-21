@@ -187,7 +187,7 @@ text({
 ```
 
 ##Transformations
-Transformations are added as attributes to drawing shapes and text. 
+Transformations are added as a list to the `transformations` attribute to drawing shapes and text. 
 
 ### <a id="translate"></a> `translate: {x: number, y: number}`
 
@@ -196,7 +196,9 @@ Moves the canvas origin to a different point.
 #### Example:
 ```js
 	rect({
-		translate: {x: 10, y: 10},
+		transformations: [
+      {translate: {x: 10, y: 10}}
+    ],
 		x: 100,
 		y: 100,
 		width: 150,
@@ -214,7 +216,9 @@ Roate the canvas around the current origin.
 #### Example:
 ```js
 	rect({
-		rotate: (20*Math.PI/180),
+		transformations: [
+		  {rotate: (20*Math.PI/180)}
+    ],
 		x: 10,
 		y: 10,
 		width: 150,
@@ -232,11 +236,34 @@ Scales the drawing bigger or smaller.
 #### Example:
 ```js
 	rect({
-		scale: {x: 2, y: 2},
+		transformations: [
+		  {scale: {x: 2, y: 2}},
+    ],
 		x: 10,
 		y: 10,
 		width: 150,
 		height: 150,
+		draw: [
+			{fill: 'purple'}
+		]
+	})
+```
+
+### Combining transformations
+
+#### Example:
+
+Rotate aroung the point (100, 100) and draw a 50x50px box centered there:
+```js
+	rect({
+		transformations: [
+      {translate: {x: 100, y: 100}},
+      {rotate: (20*Math.PI/180)}
+    ],
+		x: -25, // At this point, {x: 0, y: 0} is a point on position {x: 100, y: 100} of the canvas
+		y: -25,
+		width: 50,
+		height: 50,
 		draw: [
 			{fill: 'purple'}
 		]

@@ -11,7 +11,7 @@ function renderElement (context, element, parent) {
     x: element.x ? parent.x + element.x : parent.x,
     y: element.y ? parent.y + element.y : parent.y
   };
-  
+
   preDrawHooks(element, context);
 
   if (element.font) {
@@ -28,12 +28,12 @@ function renderElement (context, element, parent) {
 
   elementFunction(context, element, origin);
 
-  postDrawHooks(context);
-
   element.children && element.children.forEach(child => renderElement(context, child, element))
+
+  postDrawHooks(context);
 }
 
-function drawLine(context, element, origin) {
+function drawLine (context, element, origin) {
   context.lineWidth = element.style.lineWidth || 1;
   context.lineCap = element.style.lineCap || 'butt';
   context.lineJoin = element.style.lineJoin || 'miter';
@@ -54,7 +54,7 @@ function drawLine(context, element, origin) {
   context.setLineDash([]);
 }
 
-function drawRect(context, element, origin) {
+function drawRect (context, element, origin) {
   element.draw.forEach(operation => {
     context.lineWidth = operation.lineWidth || 1;
 
@@ -91,7 +91,7 @@ function drawRect(context, element, origin) {
   });
 }
 
-function drawText(context, element, origin) {
+function drawText (context, element, origin) {
   element.draw.forEach(operation => {
     context.textAlign = element.textAlign || 'left';
 
@@ -119,23 +119,29 @@ function drawText(context, element, origin) {
   });
 }
 
-function preDrawHooks(element, context) {
+function preDrawHooks (element, context) {
   context.save();
 
-  if (element.translate) {
-    context.translate(element.translate.x, element.translate.y);
+  if (!element.transformations) {
+    return;
   }
 
-  if (element.rotate) {
-    context.rotate(element.rotate);
-  }
+  element.transformations.forEach(transformation => {
+    if (transformation.translate) {
+      context.translate(transformation.translate.x, transformation.translate.y);
+    }
 
-  if(element.scale) {
-    context.scale(element.scale.x, element.scale.y);
-  }
+    if (transformation.rotate) {
+      context.rotate(transformation.rotate);
+    }
+
+    if (transformation.scale) {
+      context.scale(transformation.scale.x, transformation.scale.y);
+    }
+  });
 }
 
-function postDrawHooks(context) {
+function postDrawHooks (context) {
   context.restore();
 }
 
