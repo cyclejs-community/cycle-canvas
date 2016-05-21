@@ -1,0 +1,4 @@
+test/*.js
+--timeout 3000
+--reporter progress
+--ui tdd
