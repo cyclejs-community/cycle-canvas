@@ -1,148 +1,255 @@
-function renderElement (context, element, parent) {
+function flatten (array) {
+  if (typeof array.reduce !== 'function') {
+    return array;
+  }
+
+  return array.reduce((flatArray, arrayElement) => flatArray.concat(flatten(arrayElement)), []);
+}
+
+function compact (array) {
+  return array.filter(element => element !== undefined && element !== null);
+}
+
+function translateRect (element, origin) {
+  return element.draw.map(operation => {
+    const operations = [
+      {set: 'lineWidth', value: operation.lineWidth || 1}
+    ];
+
+    if (operation.clear) {
+      operations.push({
+        call: 'clearRect',
+        args: [
+          origin.x,
+          origin.y,
+          element.width,
+          element.height
+        ]
+      });
+    }
+
+    if (operation.fill) {
+      operations.push({
+        set: 'fillStyle',
+        value: operation.fill || 'black'
+      });
+
+      operations.push({
+        call: 'fillRect',
+        args: [
+          origin.x,
+          origin.y,
+          element.width,
+          element.height
+        ]
+      });
+    }
+
+    if (operation.stroke) {
+      operations.push({
+        set: 'strokeStyle',
+        value: operation.stroke || 'black'
+      });
+
+      operations.push({
+        call: 'strokeRect',
+        args: [
+          origin.x,
+          origin.y,
+          element.width,
+          element.height
+        ]
+      });
+    }
+
+    return operations;
+  });
+}
+
+function translateLine (element, origin) {
+  const operations = [
+    {set: 'lineWidth', value: element.style.lineWidth || 1},
+    {set: 'lineCap', value: element.style.lineCap || 'butt'},
+    {set: 'lineJoin', value: element.style.lineJoin || 'mitter'},
+    {set: 'strokeStyle', value: element.style.strokeStyle || 'black'}
+  ];
+
+  if (element.style.lineDash && element.style.lineDash.constructor === Array) {
+    operations.push({
+      call: 'setLineDash',
+      args: element.style.lineDash
+    });
+  }
+
+  operations.push({
+    call: 'moveTo',
+    args: [
+      origin.x,
+      origin.y
+    ]
+  });
+
+  operations.push({
+    call: 'beginPath',
+    args: []
+  });
+
+  element.points.forEach(point => {
+    operations.push({
+      call: 'lineTo',
+      args: [
+        origin.x + point.x,
+        origin.y + point.y
+      ]
+    });
+  });
+
+  operations.push({
+    call: 'stroke',
+    args: []
+  });
+
+  operations.push({
+    call: 'setLineDash',
+    args: []
+  });
+
+  return operations;
+}
+
+function translateText (element, origin) {
+  return element.draw.map(operation => {
+    const operations = [
+      {set: 'textAlign', value: element.textAlign || 'left'},
+      {set: 'font', value: element.font}
+    ];
+
+    const args = [
+      element.value,
+      origin.x,
+      origin.y
+    ];
+
+    if (element.width) {
+      args.push(element.width);
+    }
+
+    if (operation.fill) {
+      operations.push({
+        set: 'fillStyle',
+        value: operation.fill || 'black'
+      });
+
+      operations.push({
+        call: 'fillText',
+        args: args
+      });
+    }
+
+    if (operation.stroke) {
+      operations.push({
+        set: 'strokeStyle',
+        value: operation.stroke || 'black'
+      });
+
+      operations.push({
+        call: 'strokeText',
+        args: args
+      });
+    }
+
+    return operations;
+  });
+}
+
+export function translateVtreeToInstructions (element, parentEl) {
   if (!element) {
     return;
   }
 
-  if (!parent) {
-    parent = {x: 0, y: 0};
+  if (!parentEl) {
+    parentEl = {x: 0, y: 0};
   }
 
   const origin = {
-    x: element.x ? parent.x + element.x : parent.x,
-    y: element.y ? parent.y + element.y : parent.y
+    x: element.x ? parentEl.x + element.x : parentEl.x,
+    y: element.y ? parentEl.y + element.y : parentEl.y
   };
-
-  preDrawHooks(element, context);
-
-  if (element.font) {
-    context.font = element.font;
-  }
 
   const elementMapping = {
-    rect: drawRect,
-    text: drawText,
-    line: drawLine
+    rect: translateRect,
+    line: translateLine,
+    text: translateText
   };
 
-  const elementFunction = elementMapping[element.kind];
+  const instructions = preDrawHooks(element);
 
-  elementFunction(context, element, origin);
+  instructions.push(elementMapping[element.kind](element, origin));
 
-  element.children && element.children.forEach(child => renderElement(context, child, element))
+  instructions.push(postDrawHooks());
 
-  postDrawHooks(context);
-}
+  const flatInstructions = compact(flatten(instructions));
 
-function drawLine (context, element, origin) {
-  context.lineWidth = element.style.lineWidth || 1;
-  context.lineCap = element.style.lineCap || 'butt';
-  context.lineJoin = element.style.lineJoin || 'miter';
-  context.strokeStyle = element.style.strokeStyle || 'black';
+  if (element.children) {
+    element.children.forEach((child) => {
+      const childInstructions = translateVtreeToInstructions(child, element);
 
-  const lineDash = element.style.lineDash;
-
-  if (lineDash && lineDash.constructor === Array) {
-    context.setLineDash(element.style.lineDash);
+      if (childInstructions) {
+        flatInstructions.push(...childInstructions);
+      }
+    });
   }
 
-  context.moveTo(origin.x, origin.y);
-  context.beginPath();
-  element.points.forEach(point => {
-    context.lineTo(origin.x + point.x, origin.y + point.y);
-  });
-  context.stroke();
-  context.setLineDash([]);
+  return flatInstructions;
 }
 
-function drawRect (context, element, origin) {
-  element.draw.forEach(operation => {
-    context.lineWidth = operation.lineWidth || 1;
-
-    if (operation.clear) {
-      context.clearRect(
-          origin.x,
-          origin.y,
-          element.width,
-          element.height
-      );
-    }
-
-    if (operation.fill) {
-      context.fillStyle = operation.fill || 'black';
-
-      context.fillRect(
-          origin.x,
-          origin.y,
-          element.width,
-          element.height
-      );
-    }
-
-    if (operation.stroke) {
-      context.strokeStyle = operation.stroke || 'black';
-
-      context.strokeRect(
-          origin.x,
-          origin.y,
-          element.width,
-          element.height
-      );
+export function renderInstructionsToCanvas (instructions, context) {
+  instructions.forEach(instruction => {
+    if (instruction.set) {
+      context[instruction.set] = instruction.value;
+    } else if (instruction.call) {
+      context[instruction.call](...instruction.args);
     }
   });
 }
 
-function drawText (context, element, origin) {
-  element.draw.forEach(operation => {
-    context.textAlign = element.textAlign || 'left';
+function preDrawHooks (element) {
+  const operations = [
+    {call: 'save', args: []}
+  ];
 
-    if (operation.fill) {
-      context.fillStyle = operation.fill || 'black';
+  if (element.transformations) {
+    element.transformations.forEach(transformation => {
+       if (transformation.translate) {
+        operations.push({
+          call: 'translate',
+          args: [transformation.translate.x, transformation.translate.y]
+        });
+      }
 
-      context.fillText(
-          element.value,
-          origin.x,
-          origin.y,
-          element.width
-      );
-    }
+       if (transformation.rotate) {
+        operations.push({
+          call: 'rotate',
+          args: [transformation.rotate]
+        });
+      }
 
-    if (operation.stroke) {
-      context.strokeStyle = operation.stroke || 'black';
-
-      context.strokeText(
-          element.value,
-          origin.x,
-          origin.y,
-          element.width
-      );
-    }
-  });
-}
-
-function preDrawHooks (element, context) {
-  context.save();
-
-  if (!element.transformations) {
-    return;
+       if (transformation.scale) {
+        operations.push({
+          call: 'scale',
+          args: [transformation.scale.x, transformation.scale.y]
+        });
+      }
+     });
   }
 
-  element.transformations.forEach(transformation => {
-    if (transformation.translate) {
-      context.translate(transformation.translate.x, transformation.translate.y);
-    }
-
-    if (transformation.rotate) {
-      context.rotate(transformation.rotate);
-    }
-
-    if (transformation.scale) {
-      context.scale(transformation.scale.x, transformation.scale.y);
-    }
-  });
+  return operations;
 }
 
-function postDrawHooks (context) {
-  context.restore();
+function postDrawHooks () {
+  return [
+    {call: 'restore', args: []}
+  ];
 }
 
 export function c (kind, opts, children) {
@@ -216,7 +323,9 @@ export function makeCanvasDriver (selector, {width, height}) {
         rootElement
       );
 
-      renderElement(context, rootElementWithDefaults);
+      const instructions = translateVtreeToInstructions(rootElementWithDefaults);
+
+      renderInstructionsToCanvas(instructions, context);
     });
   };
 }
