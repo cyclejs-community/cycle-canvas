@@ -9,7 +9,7 @@ function methodSpy () {
   const stub = (...args) => {
     called += 1;
     callArgs.push(args);
-  }
+  };
 
   stub.callCount = () => called;
   stub.callArgs = () => callArgs;
@@ -134,7 +134,7 @@ describe('canvasDriver', () => {
             y: 50,
             value: 'Hello World',
             font: '18pt Arial',
-            draw: [{fill: 'white'}]            
+            draw: [{fill: 'white'}]
           })
         ]
       });
@@ -166,7 +166,7 @@ describe('canvasDriver', () => {
         style: {
           lineCap: 'square',
           strokeStyle: '#CCCCCC',
-          lineDash: [5,15]
+          lineDash: [5, 15]
         },
         points: [
           {x: 10, y: 10},
@@ -176,7 +176,7 @@ describe('canvasDriver', () => {
         ]
       });
 
-      const instructions = translateVtreeToInstructions(vtree);      
+      const instructions = translateVtreeToInstructions(vtree);
 
       assert.deepEqual(
         instructions,
@@ -186,13 +186,13 @@ describe('canvasDriver', () => {
           {set: 'lineCap', value: 'square'},
           {set: 'lineJoin', value: 'mitter'},
           {set: 'strokeStyle', value: '#CCCCCC'},
-          {call: 'setLineDash', args: [5,15]},
+          {call: 'setLineDash', args: [5, 15]},
           {call: 'moveTo', args: [x, y]},
           {call: 'beginPath', args: []},
-          {call: 'lineTo', args: [x+10, y+10]},
-          {call: 'lineTo', args: [x+10, y+20]},
-          {call: 'lineTo', args: [x+20, y+10]},
-          {call: 'lineTo', args: [x+10, y+10]},
+          {call: 'lineTo', args: [x + 10, y + 10]},
+          {call: 'lineTo', args: [x + 10, y + 20]},
+          {call: 'lineTo', args: [x + 20, y + 10]},
+          {call: 'lineTo', args: [x + 10, y + 10]},
           {call: 'stroke', args: []},
           {call: 'setLineDash', args: []},
           {call: 'restore', args: []}
@@ -350,7 +350,7 @@ describe('canvasDriver', () => {
     it('takes a vtree and checks if the instructions array contain rotate transformation', () => {
       const vtree = rect({
         transformations: [
-          {rotate: (20*Math.PI/180)}
+          {rotate: (20 * Math.PI / 180)}
         ],
         x,
         y,
@@ -365,7 +365,7 @@ describe('canvasDriver', () => {
         instructions,
         [
           {call: 'save', args: []},
-          {call: 'rotate', args: [20*Math.PI/180]},
+          {call: 'rotate', args: [20 * Math.PI / 180]},
           {set: 'lineWidth', value: 1},
           {set: 'fillStyle', value: 'black'},
           {call: 'fillRect', args: [x, y, width, height]},
@@ -396,7 +396,7 @@ describe('canvasDriver', () => {
           {set: 'lineWidth', value: 1},
           {set: 'fillStyle', value: 'black'},
           {call: 'fillRect', args: [x, y, width, height]},
-          {call: 'restore', args: []},
+          {call: 'restore', args: []}
         ]
       );
     });
@@ -461,13 +461,13 @@ describe('canvasDriver', () => {
           {set: 'lineCap', value: 'square'},
           {set: 'lineJoin', value: 'mitter'},
           {set: 'strokeStyle', value: '#CCCCCC'},
-          {call: 'setLineDash', args: [5,15]},
+          {call: 'setLineDash', args: [5, 15]},
           {call: 'moveTo', args: [x, y]},
           {call: 'beginPath', args: []},
-          {call: 'lineTo', args: [x+10, y+10]},
-          {call: 'lineTo', args: [x+10, y+20]},
-          {call: 'lineTo', args: [x+20, y+10]},
-          {call: 'lineTo', args: [x+10, y+10]},
+          {call: 'lineTo', args: [x + 10, y + 10]},
+          {call: 'lineTo', args: [x + 10, y + 20]},
+          {call: 'lineTo', args: [x + 20, y + 10]},
+          {call: 'lineTo', args: [x + 10, y + 10]},
           {call: 'stroke', args: []},
           {call: 'setLineDash', args: []}
       ];
@@ -495,25 +495,25 @@ describe('canvasDriver', () => {
       );
       assert.deepEqual(
         context.lineTo.callArgs()[0],
-        [x+10, y+10]
+        [x + 10, y + 10]
       );
       assert.deepEqual(
         context.lineTo.callArgs()[1],
-        [x+10, y+20]
+        [x + 10, y + 20]
       );
       assert.deepEqual(
         context.lineTo.callArgs()[2],
-        [x+20, y+10]
+        [x + 20, y + 10]
       );
       assert.deepEqual(
         context.lineTo.callArgs()[3],
-        [x+10, y+10]
+        [x + 10, y + 10]
       );
       assert.deepEqual(
         context.stroke.callArgs()[0],
         []
       );
-    }); 
+    });
 
     it('takes an array of instructions for filled text without a width and applies them to a canvas context', () => {
       const context = {
@@ -633,7 +633,7 @@ describe('canvasDriver', () => {
       assert.deepEqual(
         context.restore.callArgs()[0],
         []
-      ); 
+      );
     });
 
     it('takes an array of instructions for a translate transformation and applies them to a canvas context', () => {
@@ -660,7 +660,7 @@ describe('canvasDriver', () => {
       };
 
       const instructions = [
-        {call: 'rotate', args: [20*Math.PI/180]}
+        {call: 'rotate', args: [20 * Math.PI / 180]}
       ];
 
       renderInstructionsToCanvas(instructions, context);
@@ -668,7 +668,7 @@ describe('canvasDriver', () => {
       assert.equal(context.rotate.callCount(), 1);
       assert.deepEqual(
         context.rotate.callArgs()[0],
-        [20*Math.PI/180]
+        [20 * Math.PI / 180]
       );
     });
 
@@ -689,6 +689,5 @@ describe('canvasDriver', () => {
         [2, 2]
       );
     });
- 
   });
 });

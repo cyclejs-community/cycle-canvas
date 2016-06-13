@@ -79,7 +79,7 @@ function translateLine (element, origin) {
       call: 'setLineDash',
       args: element.style.lineDash
     });
-  } 
+  }
 
   operations.push({
     call: 'moveTo',
@@ -102,7 +102,7 @@ function translateLine (element, origin) {
         origin.y + point.y
       ]
     });
-  })
+  });
 
   operations.push({
     call: 'stroke',
@@ -118,7 +118,7 @@ function translateLine (element, origin) {
 }
 
 function translateText (element, origin) {
-   return element.draw.map(operation => {
+  return element.draw.map(operation => {
     const operations = [
       {set: 'textAlign', value: element.textAlign || 'left'},
       {set: 'font', value: element.font}
@@ -132,7 +132,7 @@ function translateText (element, origin) {
 
     if (element.width) {
       args.push(element.width);
-    } 
+    }
 
     if (operation.fill) {
       operations.push({
@@ -215,32 +215,32 @@ export function renderInstructionsToCanvas (instructions, context) {
 
 function preDrawHooks (element) {
   const operations = [
-    {call: 'save', args: []}  
+    {call: 'save', args: []}
   ];
 
   if (element.transformations) {
-     element.transformations.forEach(transformation => {
-      if (transformation.translate) {
+    element.transformations.forEach(transformation => {
+       if (transformation.translate) {
         operations.push({
           call: 'translate',
           args: [transformation.translate.x, transformation.translate.y]
         });
       }
 
-      if (transformation.rotate) {
+       if (transformation.rotate) {
         operations.push({
           call: 'rotate',
           args: [transformation.rotate]
         });
       }
 
-      if (transformation.scale) {
+       if (transformation.scale) {
         operations.push({
           call: 'scale',
           args: [transformation.scale.x, transformation.scale.y]
         });
       }
-    });    
+     });
   }
 
   return operations;
@@ -248,7 +248,7 @@ function preDrawHooks (element) {
 
 function postDrawHooks () {
   return [
-    {call: 'restore', args: []}  
+    {call: 'restore', args: []}
   ];
 }
 
