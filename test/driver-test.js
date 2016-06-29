@@ -1,5 +1,5 @@
 /* globals describe, it */
-import {translateVtreeToInstructions, renderInstructionsToCanvas, rect, line, text} from '../src/canvas-driver';
+import {translateVtreeToInstructions, renderInstructionsToCanvas, rect, line, text, polygon} from '../src/canvas-driver';
 import assert from 'assert';
 
 function methodSpy () {
@@ -400,6 +400,32 @@ describe('canvasDriver', () => {
         ]
       );
     });
+
+    it('takes a vtree and checks that the instructions contain drawing a polygon', () => {
+      const vtree = polygon({
+        points: [{x: 1, y: 1}, {x: 30, y: 1}, {x: 15, y: 10}],
+        draw: [{fill: 'red'}, {stroke: 'black'}]
+      })
+
+      const instructions = translateVtreeToInstructions(vtree);
+
+      assert.deepEqual(
+        instructions,
+        [
+          {call: 'save', args: []},
+          {call: 'beginPath', args: []},
+          {call: 'moveTo', args: [1, 1]},
+          {call: 'lineTo', args: [30, 1]},
+          {call: 'lineTo', args: [15, 10]},
+          {call: 'closePath', args: []},
+          {set: 'fillStyle', value: 'red'},
+          {call: 'fill', args: []},
+          {set: 'strokeStyle', value: 'black'},
+          {call: 'stroke', args: []},
+          {call: 'restore', args: []}
+        ]
+      );
+    });
   });
 
   describe('renderInstructionsToCanvas', () => {
@@ -457,19 +483,19 @@ describe('canvasDriver', () => {
       };
 
       const instructions = [
-          {set: 'lineWidth', value: 1},
-          {set: 'lineCap', value: 'square'},
-          {set: 'lineJoin', value: 'mitter'},
-          {set: 'strokeStyle', value: '#CCCCCC'},
-          {call: 'setLineDash', args: [5, 15]},
-          {call: 'moveTo', args: [x, y]},
-          {call: 'beginPath', args: []},
-          {call: 'lineTo', args: [x + 10, y + 10]},
-          {call: 'lineTo', args: [x + 10, y + 20]},
-          {call: 'lineTo', args: [x + 20, y + 10]},
-          {call: 'lineTo', args: [x + 10, y + 10]},
-          {call: 'stroke', args: []},
-          {call: 'setLineDash', args: []}
+        {set: 'lineWidth', value: 1},
+        {set: 'lineCap', value: 'square'},
+        {set: 'lineJoin', value: 'mitter'},
+        {set: 'strokeStyle', value: '#CCCCCC'},
+        {call: 'setLineDash', args: [5, 15]},
+        {call: 'moveTo', args: [x, y]},
+        {call: 'beginPath', args: []},
+        {call: 'lineTo', args: [x + 10, y + 10]},
+        {call: 'lineTo', args: [x + 10, y + 20]},
+        {call: 'lineTo', args: [x + 20, y + 10]},
+        {call: 'lineTo', args: [x + 10, y + 10]},
+        {call: 'stroke', args: []},
+        {call: 'setLineDash', args: []}
       ];
 
       renderInstructionsToCanvas(instructions, context);
@@ -513,6 +539,43 @@ describe('canvasDriver', () => {
         context.stroke.callArgs()[0],
         []
       );
+    });
+
+    it('takes an array of instructions for a polygon and applies them to a canvas context', () => {
+      const context = {
+        moveTo: methodSpy(),
+        beginPath: methodSpy(),
+        lineTo: methodSpy(),
+        closePath: methodSpy(),
+        stroke: methodSpy(),
+        fill: methodSpy()
+      };
+
+      const instructions = [
+        {call: 'beginPath', args: []},
+        {call: 'moveTo', args: [1, 1]},
+        {call: 'lineTo', args: [30, 1]},
+        {call: 'lineTo', args: [15, 10]},
+        {call: 'closePath', args: []},
+        {set: 'fillStyle', value: 'red'},
+        {call: 'fill', args: []},
+        {set: 'strokeStyle', value: 'black'},
+        {call: 'stroke', args: []}
+      ];
+
+      renderInstructionsToCanvas(instructions, context);
+
+      assert.equal(context.strokeStyle, 'black');
+      assert.equal(context.fillStyle, 'red');
+      assert.equal(context.beginPath.callCount(), 1);
+      assert.equal(context.moveTo.callCount(), 1);
+      assert.deepEqual(context.moveTo.callArgs()[0], [1, 1]);
+      assert.equal(context.lineTo.callCount(), 2);
+      assert.deepEqual(context.lineTo.callArgs()[0], [30, 1]);
+      assert.deepEqual(context.lineTo.callArgs()[1], [15, 10]);
+      assert.equal(context.closePath.callCount(), 1);
+      assert.equal(context.fill.callCount(), 1);
+      assert.equal(context.stroke.callCount(), 1);
     });
 
     it('takes an array of instructions for filled text without a width and applies them to a canvas context', () => {
