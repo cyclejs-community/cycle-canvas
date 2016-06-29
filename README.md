@@ -182,7 +182,7 @@ polygon({
 	],
 	draw: {
 		stroke: '#000',
-    fill: '#ccc'
+		fill: '#ccc'
 	},
 })
 ```
