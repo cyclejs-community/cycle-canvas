@@ -62,9 +62,9 @@ Looks like this:
 
 ![img](http://i.imgur.com/1LCZxrg.png)
 
-Also check out the [flappy bird example](http://widdersh.in/cycle-canvas).
+Also check out the [flappy bird example](https://cyclejs-community.github.io/cycle-canvas/).
 
-You can find the source for flappy bird [here](https://github.com/Widdershin/cycle-canvas/tree/master/examples/flappy-bird).
+You can find the source for flappy bird [here](https://github.com/cyclejs-community/cycle-canvas/tree/master/examples/flappy-bird).
 
 ##API
 
