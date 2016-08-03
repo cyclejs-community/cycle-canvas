@@ -1,4 +1,4 @@
-import {rect, text} from '../../src/canvas-driver';
+import {rect, text, polygon} from '../../src/canvas-driver';
 
 import {Observable} from 'rx';
 
@@ -54,38 +54,31 @@ function renderBird (bird) {
     y: bird.y + bird.width / 2
   };
 
-  const birdAngle = Math.atan(bird.velocity.y);
+  const birdAngle = Math.atan(bird.velocity.y) / 2;
+  const birdPoints = (bird) => (
+    [
+      {x: 0, y: 10},
+      {x: 0, y: bird.height},
+      {x: bird.width - 10, y: bird.height},
+      {x: bird.width - 7, y: 10},
+      {x: bird.width, y: 10},
+      {x: bird.width, y: 0},
+      {x: bird.width - 7, y: 0},
+      {x: bird.width - 10, y: 10}
+    ]
+  )
 
   return (
-    rect({
+    polygon({
       transformations: [
         {translate: birdCenter},
-        {rotate: birdAngle}
+        {rotate: birdAngle},
+        {translate: {x: bird.width / -2, y: bird.height / -2}}
       ],
-      ...bird,
-
-      x: bird.width / -2,
-      y: bird.height / -2,
+      points: birdPoints(bird),
       draw: [
         {fill: 'orange'},
         {stroke: 'black', lineWidth: 2}
-      ]
-    }, [
-      renderBirdHead(bird)
-    ])
-  );
-}
-
-function renderBirdHead (bird) {
-  return (
-    rect({
-      x: bird.width * 0.9,
-      y: bird.height * (-0.3),
-      width: bird.width * 0.4,
-      height: bird.height * 0.4,
-      draw: [
-        {fill: 'orange'},
-        {stroke: 'black', lineWidth: 1}
       ]
     })
   );

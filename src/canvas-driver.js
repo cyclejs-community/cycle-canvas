@@ -117,6 +117,34 @@ function translateLine (element, origin) {
   return operations;
 }
 
+function translatePolygon (element, origin) {
+  const [first, ...rest] = element.points;
+
+  return [].concat(
+    [{call: 'beginPath', args: []}],
+    [{call: 'moveTo', args: [origin.x + first.x, origin.y + first. y]}],
+    rest.map(point => {
+      return {call: 'lineTo', args: [origin.x + point.x, origin.y + point.y]};
+    }),
+    [{call: 'closePath', args: []}],
+    element.draw.map(operation => {
+      const fillInstructions = [
+        {set: 'fillStyle', value: operation.fill},
+        {call: 'fill', args: []}
+      ]
+      const strokeInstructions = [
+        {set: 'strokeStyle', value: operation.stroke},
+        {call: 'stroke', args: []}
+      ]
+      return operation.fill
+        ? fillInstructions
+        : operation.stroke
+          ? strokeInstructions
+          : [];
+    })
+  );
+}
+
 function translateText (element, origin) {
   return element.draw.map(operation => {
     const operations = [
@@ -179,7 +207,8 @@ export function translateVtreeToInstructions (element, parentEl) {
   const elementMapping = {
     rect: translateRect,
     line: translateLine,
-    text: translateText
+    text: translateText,
+    polygon: translatePolygon
   };
 
   const instructions = preDrawHooks(element);
@@ -220,27 +249,27 @@ function preDrawHooks (element) {
 
   if (element.transformations) {
     element.transformations.forEach(transformation => {
-       if (transformation.translate) {
+      if (transformation.translate) {
         operations.push({
           call: 'translate',
           args: [transformation.translate.x, transformation.translate.y]
         });
       }
 
-       if (transformation.rotate) {
+      if (transformation.rotate) {
         operations.push({
           call: 'rotate',
           args: [transformation.rotate]
         });
       }
 
-       if (transformation.scale) {
+      if (transformation.scale) {
         operations.push({
           call: 'scale',
           args: [transformation.scale.x, transformation.scale.y]
         });
       }
-     });
+    });
   }
 
   return operations;
@@ -288,6 +317,10 @@ export function line (opts, children) {
     }
   };
   return c('line', {...defaults, ...opts}, children);
+}
+
+export function polygon (opts, children) {
+  return c('polygon', opts, children);
 }
 
 export function makeCanvasDriver (selector, {width, height}) {

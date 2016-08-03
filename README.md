@@ -158,6 +158,35 @@ line({
 })
 ```
 
+### <a id="polygon"></a> `polygon(params = {})`
+
+Draws line(s) given an object containing drawing parameters.
+
+#### params {}:
+
+- `points: array` List of point objects that specify the x/y coordinates for each point of the polygon. Using less than 3 points is a terrible way to draw a line.
+- `draw: array` List of drawing operation objects.
+	- `fill: string` The color or style to use inside the polygon. If not present, the polygon will not be filled.
+	- `stroke: string` The color or style to use as the stroke style. If not present, the polygon will not have an outline.
+- `children: array` List of child drawing shapes or text. This property is **optional**.
+
+#### Example:
+```js
+polygon({
+	points: [
+		{x: 10, y: 0},
+		{x: 0, y: 10},
+		{x: 0, y: 30},
+		{x: 30, y: 30},
+		{x: 30, y: 10} // a house shaped polygon
+	],
+	draw: {
+		stroke: '#000',
+		fill: '#ccc'
+	},
+})
+```
+
 ### <a id="text"></a> `text(options = {})`
 
 Draws text given an object containing drawing parameters.
