@@ -55,5 +55,11 @@
     "mocha": "^2.4.5",
     "rx": "^4.0.7",
     "uglifyify": "^3.0.1"
+  },
+  "peerDependencies": {
+    "xstream": "*"
+  },
+  "dependencies": {
+    "@cycle/xstream-adapter": "^3.0.3"
   }
 }
