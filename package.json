@@ -56,10 +56,8 @@
     "rx": "^4.0.7",
     "uglifyify": "^3.0.1"
   },
-  "peerDependencies": {
-    "xstream": "*"
-  },
   "dependencies": {
-    "@cycle/xstream-adapter": "^3.0.3"
+    "@cycle/xstream-adapter": "^3.0.3",
+    "xstream": "^6.2.0"
   }
 }
