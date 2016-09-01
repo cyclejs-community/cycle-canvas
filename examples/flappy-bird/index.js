@@ -1,4 +1,4 @@
-import {run} from '@cycle/core';
+import {run} from '@cycle/rx-run';
 import {makeCanvasDriver} from '../../src/canvas-driver';
 import {makeAnimationDriver} from 'cycle-animation-driver';
 import keycode from 'keycode';

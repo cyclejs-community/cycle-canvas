@@ -1,3 +1,6 @@
+import XStreamAdapter from '@cycle/xstream-adapter';
+import xs from 'xstream'
+
 function flatten (array) {
   if (typeof array.reduce !== 'function') {
     return array;
@@ -337,28 +340,37 @@ export function makeCanvasDriver (selector, {width, height}) {
 
   const context = canvas.getContext('2d');
 
-  return function canvasDriver (sink$) {
-    return sink$.subscribe(rootElement => {
-      const defaults = {
-        kind: 'rect',
-        x: 0,
-        y: 0,
-        width: canvas.width,
-        height: canvas.height,
-        draw: [
+  let driver = function canvasDriver (sink$) {
+    sink$.addListener({
+      next: rootElement => {
+        const defaults = {
+          kind: 'rect',
+          x: 0,
+          y: 0,
+          width: canvas.width,
+          height: canvas.height,
+          draw: [
           {clear: true}
-        ]
-      };
+          ]
+        };
 
-      const rootElementWithDefaults = Object.assign(
-        {},
-        defaults,
-        rootElement
-      );
+        const rootElementWithDefaults = Object.assign(
+          {},
+          defaults,
+          rootElement
+          );
 
-      const instructions = translateVtreeToInstructions(rootElementWithDefaults);
+        const instructions = translateVtreeToInstructions(rootElementWithDefaults);
 
-      renderInstructionsToCanvas(instructions, context);
+        renderInstructionsToCanvas(instructions, context);
+      },
+      error: e => { throw e },
+      complete: () => null
     });
-  };
+
+    return xs.empty();
+  }
+
+  driver.streamAdapter = XStreamAdapter;
+  return driver;
 }
