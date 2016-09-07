@@ -1,4 +1,4 @@
-# cycle-canvas
+# cycle-canvas [![npm version](https://badge.fury.io/js/cycle-canvas.svg)](https://badge.fury.io/js/cycle-canvas) [![Build Status](https://travis-ci.org/cyclejs-community/cycle-canvas.svg?branch=master)](https://travis-ci.org/cyclejs-community/cycle-canvas)
 A canvas driver for Cycle.js. Great for games or art.
 
 Currently highly experimental. Expect major breaking changes.
