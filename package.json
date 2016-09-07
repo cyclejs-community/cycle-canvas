@@ -23,10 +23,10 @@
     "url": "https://github.com/Widdershin/cycle-canvas.git"
   },
   "keywords": [
-    "hot",
-    "reloading",
-    "cycle.js",
-    "happiness"
+    "canvas",
+    "driver",
+    "cycle",
+    "cycle.js"
   ],
   "author": "Nick Johnstone",
   "license": "MIT",
