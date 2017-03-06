@@ -1,6 +1,6 @@
 import {rect, text, polygon} from '../../src/canvas-driver';
 
-import {Observable} from 'rx';
+import {Observable} from 'rxjs/Observable';
 
 import _ from 'lodash';
 import collide from 'box-collide';
@@ -232,7 +232,7 @@ function resetGame () {
   };
 }
 
-export default function App ({Canvas, Keys, Animation}) {
+export default function App ({Canvas, Keys, Time}) {
   const initialState = startState();
 
   const space$  = Keys.pressed('space');
@@ -243,7 +243,7 @@ export default function App ({Canvas, Keys, Animation}) {
 
   const spawnPipe$ = Observable.interval(4000).startWith(0).map(spawnPipe);
 
-  const update$ = Animation.pluck('delta').map(update);
+  const update$ = Time.animationFrames().map(frame => frame.delta).map(update);
 
   const action$ = Observable.merge(
     update$,

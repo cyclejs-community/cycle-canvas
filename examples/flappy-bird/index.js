@@ -1,8 +1,8 @@
-import {run} from '@cycle/rx-run';
+import {run} from '@cycle/rxjs-run';
 import {makeCanvasDriver} from '../../src/canvas-driver';
-import {makeAnimationDriver} from 'cycle-animation-driver';
+import {timeDriver} from '@cycle/time/rxjs';
 import keycode from 'keycode';
-import {Observable} from 'rx';
+import {Observable} from 'rxjs/Observable';
 
 var app = require('./app').default;
 
@@ -27,7 +27,7 @@ function makeKeysDriver () {
 }
 
 const drivers = {
-  Animation: makeAnimationDriver(),
+  Time: timeDriver,
   Canvas: makeCanvasDriver('.canvas', {width: 800, height: 600}),
   Keys: makeKeysDriver()
 };
