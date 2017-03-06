@@ -14,9 +14,9 @@ Example
 ---
 
 ```js
-import {run} from '@cycle/core';
+import {run} from '@cycle/rxjs-run';
 import {makeCanvasDriver, rect, text} from 'cycle-canvas';
-import {Observable} from 'rx';
+import {Observable} from 'rxjs/Observable';
 
 function main () {
   return {
