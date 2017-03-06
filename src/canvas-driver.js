@@ -1,5 +1,5 @@
-import XStreamAdapter from '@cycle/xstream-adapter';
-import xs from 'xstream'
+import {adapt} from '@cycle/run/lib/adapt';
+import xs from 'xstream';
 
 function flatten (array) {
   if (typeof array.reduce !== 'function') {
@@ -368,9 +368,8 @@ export function makeCanvasDriver (selector, {width, height}) {
       complete: () => null
     });
 
-    return xs.empty();
+    return adapt(xs.empty());
   }
 
-  driver.streamAdapter = XStreamAdapter;
   return driver;
 }
