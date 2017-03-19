@@ -28,7 +28,7 @@ function makeKeysDriver () {
 
 const drivers = {
   Time: timeDriver,
-  Canvas: makeCanvasDriver('.canvas', {width: 800, height: 600}),
+  Canvas: makeCanvasDriver('.canvas'),
   Keys: makeKeysDriver()
 };
 

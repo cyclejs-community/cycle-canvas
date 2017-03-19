@@ -326,7 +326,7 @@ export function polygon (opts, children) {
   return c('polygon', opts, children);
 }
 
-export function makeCanvasDriver (selector, {width, height}) {
+export function makeCanvasDriver (selector, canvasSize = null) {
   let canvas = document.querySelector(selector);
 
   if (!canvas) {
@@ -335,8 +335,10 @@ export function makeCanvasDriver (selector, {width, height}) {
     document.body.appendChild(canvas);
   }
 
-  canvas.width = width;
-  canvas.height = height;
+  if (canvasSize) {
+    canvas.width = canvasSize.width;
+    canvas.height = canvasSize.height;
+  }
 
   const context = canvas.getContext('2d');
 
