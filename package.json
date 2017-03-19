@@ -7,7 +7,7 @@
     "main": "src/canvas-driver.js"
   },
   "scripts": {
-    "start": "babel-node ./examples/flappy-bird/server.js",
+    "start": "budo examples/flappy-bird/index.js:bundle.js -d examples/flappy-bird --live -p 8000 -- -t babelify -p browserify-hmr",
     "test": "mocha --compilers js:babel-core/register",
     "autotest": "mocha --compilers js:babel-core/register --watch -R min",
     "bundle": "browserify ./examples/flappy-bird/index.js -t babelify -t uglifyify -o bundle.js",
