@@ -3,12 +3,14 @@ A canvas driver for Cycle.js. Great for games or art.
 
 Currently highly experimental. Expect major breaking changes.
 
+
 Installation
 ---
 
 ```bash
 $ npm install cycle-canvas --save
 ```
+
 
 Example
 ---
@@ -68,6 +70,10 @@ You can find the source for flappy bird [here](https://github.com/cyclejs-commun
 
 ##API
 
+#### Creating a canvas driver
+
+- [`makeCanvasDriver`](#makeCanvasDriver)
+
 #### Drawing shapes and text
 
 - [`rect`](#rect)
@@ -79,6 +85,23 @@ You can find the source for flappy bird [here](https://github.com/cyclejs-commun
 - [`translate`](#translate)
 - [`rotate`](#rotate)
 - [`scale`](#scale)
+
+## Creating a canvas driver
+### <a id="makeCanvasDriver"></a> `makeCanvasDriver(selector, canvasSize = null)`
+
+A factory for the canvas driver function.
+
+Receives a selector which should resolve to a canvas to which the driver function will attach.
+
+If the selector does not resolve to a canvas, a new canvas element will be added at the bottom of the document and the driver will attach to that canvas.
+
+The input to this driver is a stream of drawing instructions and transformations as detailed below.
+
+#### Arguments
+
+- `selector: string` a css selector to use in order to find a canvas to attach the driver to.
+- `canvasSize: {width: integer, height: integer}` an object that denotes the size to set for the attached canvas. If null, the driver attaches to its canvas without altering its size.
+
 
 ## Drawing shapes and text
 
@@ -93,9 +116,9 @@ Draws a rectangle given an object containing drawing parameters.
 - `width: number` The rectangles width.
 - `heigh: number` The rectangles height.
 - `draw: array` List of drawing operation objects.
-	- `fill: string` The color or style to use inside the rectangle. Default is *black #000*.
-	- `stroke: string` The color or style to use as the stroke style. Default is *black #000*.
-	- `clear: boolean` Sets all pixels in the rectangle to transparent.
+  - `fill: string` The color or style to use inside the rectangle. Default is *black #000*.
+  - `stroke: string` The color or style to use as the stroke style. Default is *black #000*.
+  - `clear: boolean` Sets all pixels in the rectangle to transparent.
 - `children: array` List of child drawing shapes or text. This property is **optional**.
 
 #### Example:
@@ -131,11 +154,11 @@ Draws line(s) given an object containing drawing parameters.
 - `x: number` The x axis for the starting point.
 - `y: number` The y axis for the starting point.
 - `style: object` The style properties. 
-	- `lineWidth: number` The width of the line. Default is *1*.
-	- `lineCap: string` The end point of the line. Default is *butt*. Possible values are *butt*, *round* and *square*.
-	- `lineJoin: string` The type of corner created when two lines meet. Default is *miter*. Possible values are *miter*, *round* and *bevel*.
-	- `strokeStyle: string` The color or style to use as the stroke style. Default is *black #000*.
-	- `lineDash: array` A list of numbers that specifies the line dash pattern.
+  - `lineWidth: number` The width of the line. Default is *1*.
+  - `lineCap: string` The end point of the line. Default is *butt*. Possible values are *butt*, *round* and *square*.
+  - `lineJoin: string` The type of corner created when two lines meet. Default is *miter*. Possible values are *miter*, *round* and *bevel*.
+  - `strokeStyle: string` The color or style to use as the stroke style. Default is *black #000*.
+  - `lineDash: array` A list of numbers that specifies the line dash pattern.
 - `points: array` List of point objects that specify the x/y coordinates for each point.
 - `children: array` List of child drawing shapes or text. This property is **optional**.
 
@@ -166,8 +189,8 @@ Draws line(s) given an object containing drawing parameters.
 
 - `points: array` List of point objects that specify the x/y coordinates for each point of the polygon. Using less than 3 points is a terrible way to draw a line.
 - `draw: array` List of drawing operation objects.
-	- `fill: string` The color or style to use inside the polygon. If not present, the polygon will not be filled.
-	- `stroke: string` The color or style to use as the stroke style. If not present, the polygon will not have an outline.
+  - `fill: string` The color or style to use inside the polygon. If not present, the polygon will not be filled.
+  - `stroke: string` The color or style to use as the stroke style. If not present, the polygon will not have an outline.
 - `children: array` List of child drawing shapes or text. This property is **optional**.
 
 #### Example:
@@ -198,8 +221,8 @@ Draws text given an object containing drawing parameters.
 - `value: string` The text to draw.
 - `font: string` The text style. Uses same syntax  as the [CSS font](https://developer.mozilla.org/en-US/docs/Web/CSS/font) property.
 - `draw: array` List of drawing operations objects.
-	- `fill: string` The color or style to fill the text. Default is *black #000*.
-	- `stroke: string`The color or style to use as the stroke style. Default is *black #000*.
+  - `fill: string` The color or style to fill the text. Default is *black #000*.
+  - `stroke: string`The color or style to use as the stroke style. Default is *black #000*.
 - `children: array` List of child drawing shapes or text. This property is **optional**.
 
 #### Example:
