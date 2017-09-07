@@ -1,5 +1,5 @@
 /* globals describe, it */
-import {translateVtreeToInstructions, renderInstructionsToCanvas, rect, line, text, polygon} from '../src/canvas-driver';
+import {translateVtreeToInstructions, renderInstructionsToCanvas, rect, line, text, polygon, image} from '../src/canvas-driver';
 import assert from 'assert';
 
 function methodSpy () {
@@ -426,6 +426,74 @@ describe('canvasDriver', () => {
         ]
       );
     });
+
+    it('takes a vtree and checks that the instructions contain drawing an image', () => {
+      const img = 'image';
+      const vtree = image({
+        image: img,
+        x,
+        y
+      });
+
+      const instructions = translateVtreeToInstructions(vtree);
+
+      assert.deepEqual(
+        instructions,
+        [
+          {call: 'save', args: []},
+          {call: 'drawImage', args: [img, x, y]},
+          {call: 'restore', args: []}
+        ]
+      );
+    });
+
+    it('takes a vtree and checks that the instructions contain drawing an image including scaling', () => {
+      const img = 'image';
+      const vtree = image({
+        image: img,
+        x,
+        y,
+        width,
+        height
+      });
+
+      const instructions = translateVtreeToInstructions(vtree);
+
+      assert.deepEqual(
+        instructions,
+        [
+          {call: 'save', args: []},
+          {call: 'drawImage', args: [img, x, y, width, height]},
+          {call: 'restore', args: []}
+        ]
+      );
+    });
+
+    it('takes a vtree and checks that the instructions contain drawing an image including slicing', () => {
+      const img = 'image';
+      const vtree = image({
+        image: img,
+        x,
+        y,
+        width,
+        height,
+        sx: 16,
+        sy: 16,
+        sWidth: 128,
+        sHeight: 128
+      });
+
+      const instructions = translateVtreeToInstructions(vtree);
+
+      assert.deepEqual(
+        instructions,
+        [
+          {call: 'save', args: []},
+          {call: 'drawImage', args: [img, 16, 16, 128, 128, x, y, width, height]},
+          {call: 'restore', args: []}
+        ]
+      );
+    });
   });
 
   describe('renderInstructionsToCanvas', () => {
@@ -671,6 +739,63 @@ describe('canvasDriver', () => {
       assert.deepEqual(
         context.strokeText.callArgs()[0],
         ['Hello World', x, y, width]
+      );
+    });
+
+    it('takes an array of instructions for an image and applies them to a canvas context', () => {
+      const context = {
+        drawImage: methodSpy()
+      };
+
+      const img = 'image';
+      const instructions = [
+        {call: 'drawImage', args: [img, x, y]},
+      ];
+
+      renderInstructionsToCanvas(instructions, context);
+
+      assert.equal(context.drawImage.callCount(), 1);
+      assert.deepEqual(
+        context.drawImage.callArgs()[0],
+        [img, x, y]
+      );
+    });
+
+    it('takes an array of instructions for an image with scaling and applies them to a canvas context', () => {
+      const context = {
+        drawImage: methodSpy()
+      };
+
+      const img = 'image';
+      const instructions = [
+        {call: 'drawImage', args: [img, x, y, width, height]},
+      ];
+
+      renderInstructionsToCanvas(instructions, context);
+
+      assert.equal(context.drawImage.callCount(), 1);
+      assert.deepEqual(
+        context.drawImage.callArgs()[0],
+        [img, x, y, width, height]
+      );
+    });
+
+    it('takes an array of instructions for an image with slicing and applies them to a canvas context', () => {
+      const context = {
+        drawImage: methodSpy()
+      };
+
+      const img = 'image';
+      const instructions = [
+        {call: 'drawImage', args: [img, 16, 16, 128, 128, x, y, width, height]},
+      ];
+
+      renderInstructionsToCanvas(instructions, context);
+
+      assert.equal(context.drawImage.callCount(), 1);
+      assert.deepEqual(
+        context.drawImage.callArgs()[0],
+        [img, 16, 16, 128, 128, x, y, width, height]
       );
     });
 

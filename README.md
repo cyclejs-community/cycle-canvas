@@ -79,6 +79,7 @@ You can find the source for flappy bird [here](https://github.com/cyclejs-commun
 - [`rect`](#rect)
 - [`line`](#line)
 - [`text`](#text)
+- [`image`](#image)
 
 
 #### Transformations
@@ -153,7 +154,7 @@ Draws line(s) given an object containing drawing parameters.
 
 - `x: number` The x axis for the starting point.
 - `y: number` The y axis for the starting point.
-- `style: object` The style properties. 
+- `style: object` The style properties.
   - `lineWidth: number` The width of the line. Default is *1*.
   - `lineCap: string` The end point of the line. Default is *butt*. Possible values are *butt*, *round* and *square*.
   - `lineJoin: string` The type of corner created when two lines meet. Default is *miter*. Possible values are *miter*, *round* and *bevel*.
@@ -222,7 +223,7 @@ Draws text given an object containing drawing parameters.
 - `font: string` The text style. Uses same syntax  as the [CSS font](https://developer.mozilla.org/en-US/docs/Web/CSS/font) property.
 - `draw: array` List of drawing operations objects.
   - `fill: string` The color or style to fill the text. Default is *black #000*.
-  - `stroke: string`The color or style to use as the stroke style. Default is *black #000*.
+  - `stroke: string` The color or style to use as the stroke style. Default is *black #000*.
 - `children: array` List of child drawing shapes or text. This property is **optional**.
 
 #### Example:
@@ -238,8 +239,33 @@ text({
 })
 ```
 
+### <a id="image"></a> `image(params = {})`
+
+Draws an image given an object containing drawing parameters.
+
+#### params {}:
+
+- `x: number` The x axis for the starting point.
+- `y: number` The y axis for the starting point.
+- `src: CanvasImageSource` The image to draw.
+- `width: number` The width to scale the image to. This property is **optional**.
+- `height: number` The height to scale the image to. This property is **optional**.
+- `sx: number` The x axis of the source image. This property is **optional**.
+- `sy: number` The y axis of the source image. This property is **optional**.
+- `sWidth: number` The width of the source image. This property is **optional**.
+- `sHeight: number` The height of the source image. This property is **optional**.
+
+#### Example:
+```js
+image({
+	x: 10,
+	y: 10,
+  src: document.querySelector('img')
+})
+```
+
 ##Transformations
-Transformations are added as a list to the `transformations` attribute to drawing shapes and text. 
+Transformations are added as a list to the `transformations` attribute to drawing shapes and text.
 
 ### <a id="translate"></a> `translate: {x: number, y: number}`
 
@@ -263,7 +289,7 @@ Moves the canvas origin to a different point.
 
 ### <a id="rotate"></a> `rotate: number`
 
-Roate the canvas around the current origin.
+Rotate the canvas around the current origin.
 
 #### Example:
 ```js
@@ -305,7 +331,7 @@ Scales the drawing bigger or smaller.
 
 #### Example:
 
-Rotate aroung the point (100, 100) and draw a 50x50px box centered there:
+Rotate around the point (100, 100) and draw a 50x50px box centered there:
 ```js
 	rect({
 		transformations: [

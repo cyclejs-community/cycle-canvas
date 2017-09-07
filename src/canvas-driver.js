@@ -193,6 +193,22 @@ function translateText (element, origin) {
   });
 }
 
+function translateImage (element, origin) {
+  const args = [element.image];
+
+  if (element.sx != null) {
+    args.push(element.sx, element.sy, element.sWidth, element.sHeight);
+  }
+
+  args.push(element.x, element.y);
+
+  if (element.width != null) {
+    args.push(element.width, element.height);
+  }
+
+  return [{call: 'drawImage', args}];
+}
+
 export function translateVtreeToInstructions (element, parentEl) {
   if (!element) {
     return;
@@ -211,7 +227,8 @@ export function translateVtreeToInstructions (element, parentEl) {
     rect: translateRect,
     line: translateLine,
     text: translateText,
-    polygon: translatePolygon
+    polygon: translatePolygon,
+    image: translateImage
   };
 
   const instructions = preDrawHooks(element);
@@ -324,6 +341,10 @@ export function line (opts, children) {
 
 export function polygon (opts, children) {
   return c('polygon', opts, children);
+}
+
+export function image (opts) {
+  return c('image', opts, []);
 }
 
 export function makeCanvasDriver (selector, canvasSize = null) {
