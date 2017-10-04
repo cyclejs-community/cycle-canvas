@@ -68,7 +68,7 @@ Also check out the [flappy bird example](https://cyclejs-community.github.io/cyc
 
 You can find the source for flappy bird [here](https://github.com/cyclejs-community/cycle-canvas/tree/master/examples/flappy-bird).
 
-##API
+## API
 
 #### Creating a canvas driver
 
@@ -264,7 +264,7 @@ image({
 })
 ```
 
-##Transformations
+## Transformations
 Transformations are added as a list to the `transformations` attribute to drawing shapes and text.
 
 ### <a id="translate"></a> `translate: {x: number, y: number}`
