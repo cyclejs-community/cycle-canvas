@@ -1,5 +1,5 @@
 /* globals describe, it */
-import {translateVtreeToInstructions, renderInstructionsToCanvas, rect, line, text, polygon, image} from '../src/canvas-driver'
+import {translateVtreeToInstructions, renderInstructionsToCanvas, rect, line, arc, text, polygon, image} from '../src/canvas-driver'
 import assert from 'assert'
 
 function methodSpy () {
@@ -494,6 +494,34 @@ describe('canvasDriver', () => {
         ]
       )
     })
+
+    it('takes a vtree and checks that the instructions contain drawing an arc', () => {
+      const vtree = arc({
+        x: 10,
+        y: 10,
+        radius: 100,
+        startAngle: 0,
+        endAngle: 180,
+        anticlockwise: false,
+        draw: [{fill: 'black'}, {stroke: 'red'}]
+      })
+
+      const instructions = translateVtreeToInstructions(vtree)
+
+      assert.deepEqual(
+        instructions,
+        [
+          {call: 'save', args: []},
+          {call: 'beginPath', args: []},
+          {call: 'arc', args: [10, 10, 100, 0, 180, false]},
+          {set: 'fillStyle', value: 'black'},
+          {call: 'fill', args: []},
+          {set: 'strokeStyle', value: 'red'},
+          {call: 'stroke', args: []},
+          {call: 'restore', args: []}
+        ]
+      )
+    })
   })
 
   describe('renderInstructionsToCanvas', () => {
@@ -694,7 +722,7 @@ describe('canvasDriver', () => {
       )
     })
 
-    it('takes an array of instructions for a stroked text without a widht and applies them to a canvas context', () => {
+    it('takes an array of instructions for a stroked text without a width and applies them to a canvas context', () => {
       const context = {
         strokeText: methodSpy()
       }
@@ -821,6 +849,36 @@ describe('canvasDriver', () => {
       assert.deepEqual(
         context.restore.callArgs()[0],
         []
+      )
+    })
+
+    it('takes an array of instructions for an arc and applies them to a canvas context', () => {
+      const context = {
+        beginPath: methodSpy(),
+        stroke: methodSpy(),
+        fill: methodSpy(),
+        arc: methodSpy()
+      }
+
+      const instructions = [
+        {call: 'beginPath', args: []},
+        {call: 'arc', args: [10, 10, 10, 100, 0, false]},
+        {set: 'fillStyle', value: 'red'},
+        {call: 'fill', args: []},
+        {set: 'strokeStyle', value: 'black'},
+        {call: 'stroke', args: []}
+      ]
+
+      renderInstructionsToCanvas(instructions, context)
+
+      assert.equal(context.strokeStyle, 'black')
+      assert.equal(context.fillStyle, 'red')
+      assert.equal(context.beginPath.callCount(), 1)
+      assert.equal(context.fill.callCount(), 1)
+      assert.equal(context.stroke.callCount(), 1)
+      assert.deepEqual(
+        context.arc.callArgs()[0],
+        [10, 10, 10, 100, 0, false]
       )
     })
 

@@ -209,6 +209,48 @@ function translateImage (element, origin) {
   return [{call: 'drawImage', args}]
 }
 
+function translateArc (element, origin) {
+  const operations = [
+    {call: 'beginPath', args: []},
+    {call: 'arc', args: [
+      element.x,
+      element.y,
+      element.radius,
+      element.startAngle,
+      element.endAngle,
+      element.anticlockwise || false
+    ]}
+  ]
+
+  element.draw.map(operation => {
+    if (operation.fill) {
+      operations.push({
+        set: 'fillStyle',
+        value: operation.fill || 'black'
+      })
+
+      operations.push({
+        call: 'fill',
+        args: []
+      })
+    }
+
+    if (operation.stroke) {
+      operations.push({
+        set: 'strokeStyle',
+        value: operation.stroke || 'black'
+      })
+
+      operations.push({
+        call: 'stroke',
+        args: []
+      })
+    }
+  });
+
+  return operations;
+}
+
 export function translateVtreeToInstructions (element, parentEl) {
   if (!element) {
     return
@@ -228,7 +270,8 @@ export function translateVtreeToInstructions (element, parentEl) {
     line: translateLine,
     text: translateText,
     polygon: translatePolygon,
-    image: translateImage
+    image: translateImage,
+    arc: translateArc
   }
 
   const instructions = preDrawHooks(element)
@@ -315,6 +358,10 @@ export function c (kind, opts, children) {
 
 export function rect (opts, children) {
   return c('rect', opts, children)
+}
+
+export function arc (opts, children) {
+  return c('arc', opts, children)
 }
 
 export function text (opts, children) {
