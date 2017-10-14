@@ -78,6 +78,7 @@ You can find the source for flappy bird [here](https://github.com/cyclejs-commun
 
 - [`rect`](#rect)
 - [`line`](#line)
+- [`arc`](#arc)
 - [`text`](#text)
 - [`image`](#image)
 
@@ -179,6 +180,35 @@ line({
 		{x: 20, y: 10},
 		{x: 10, y: 10}
 	]
+})
+```
+
+### <a id="arc"></a> `arc(params = {})`
+
+Draws an arc given an object containing drawing parameters.
+
+#### params {}:
+- `x: number` The x coordinate of the arc's center.
+- `y: number` The y coordinate of the arc's center.
+- `radius: number` The arc's radius.
+- `startAngle: number` The angle at which the arc starts, measured clockwise from the positive x axis and expressed in radians.
+- `endAngle: number` The angle at which the arc ends, measured clockwise from the positive x axis and expressed in radians.
+- `anticlockwise` An optional Boolean which, if true, causes the arc to be drawn counter-clockwise between the two angles. By default it is drawn clockwise.
+- `draw: array` List of drawing operation objects.
+  - `fill: string` The color or style to use inside the arc.
+  - `stroke: string` The color or style to use as the stroke style.
+- `children: array` List of child drawing shapes or text. This property is **optional**.
+
+#### Example:
+```js
+arc({
+	x: 50,
+	y: 50,
+  radius: 50,
+  startAngle: 0,
+  endAngle: 2 * Math.PI,
+  false,
+  draw: [{fill: 'red'}, {stroke: 'black'}]
 })
 ```
 
