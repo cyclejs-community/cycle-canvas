@@ -246,9 +246,9 @@ function translateArc (element, origin) {
         args: []
       })
     }
-  });
+  })
 
-  return operations;
+  return operations
 }
 
 export function translateVtreeToInstructions (element, parentEl) {
