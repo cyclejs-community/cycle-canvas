@@ -1,6 +1,6 @@
 {
   "name": "cycle-canvas",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "A canvas driver for Cycle.js",
   "main": "lib/canvas-driver.js",
   "jspm": {
