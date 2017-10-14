@@ -79,6 +79,7 @@ You can find the source for flappy bird [here](https://github.com/cyclejs-commun
 - [`rect`](#rect)
 - [`line`](#line)
 - [`arc`](#arc)
+- [`polygon`](#polygon)
 - [`text`](#text)
 - [`image`](#image)
 
