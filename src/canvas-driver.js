@@ -1,5 +1,7 @@
 import {adapt} from '@cycle/run/lib/adapt'
 import xs from 'xstream'
+import fromEvent from 'xstream/extra/fromEvent'
+import root from 'window-or-global'
 
 function flatten (array) {
   if (typeof array.reduce !== 'function') {
@@ -395,12 +397,12 @@ export function image (opts) {
 }
 
 export function makeCanvasDriver (selector, canvasSize = null) {
-  let canvas = document.querySelector(selector)
+  let canvas = root.document.querySelector(selector)
 
   if (!canvas) {
-    canvas = document.createElement('canvas')
+    canvas = root.document.createElement('canvas')
 
-    document.body.appendChild(canvas)
+    root.document.body.appendChild(canvas)
   }
 
   if (canvasSize) {
@@ -438,7 +440,9 @@ export function makeCanvasDriver (selector, canvasSize = null) {
       complete: () => null
     })
 
-    return adapt(xs.empty())
+    return {
+      events: eventName => fromEvent(canvas, eventName)
+    }
   }
 
   return driver

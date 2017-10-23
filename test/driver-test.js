@@ -1,6 +1,9 @@
 /* globals describe, it */
-import {translateVtreeToInstructions, renderInstructionsToCanvas, rect, line, arc, text, polygon, image} from '../src/canvas-driver'
+import {translateVtreeToInstructions, renderInstructionsToCanvas, rect, line, arc, text, polygon, image, makeCanvasDriver} from '../src/canvas-driver'
 import assert from 'assert'
+import root from 'window-or-global'
+import { JSDOM } from 'jsdom'
+import xs from 'xstream'
 
 function methodSpy () {
   let called = 0
@@ -934,6 +937,30 @@ describe('canvasDriver', () => {
         context.scale.callArgs()[0],
         [2, 2]
       )
+    })
+  })
+
+  describe('makeCanvasDriver', () => {
+    it('returns object containing "events" method, which accepts an event name and returns stream of such events on the canvas', done => {
+      const jsdom = new JSDOM('<!DOCTYPE html><html><body><canvas></canvas></body></html>')
+      root.document = jsdom.window.document
+
+      const canvasEl = root.document.querySelector('canvas')
+      canvasEl.getContext = methodSpy()
+
+      const Canvas = makeCanvasDriver('canvas')(xs.empty())
+      const click$ = Canvas.events('click')
+
+      const event = new jsdom.window.MouseEvent('click')
+
+      click$.addListener({
+        next: clickEvent => {
+          assert.strictEqual(clickEvent, event)
+          done()
+        }
+      })
+
+      canvasEl.dispatchEvent(event)
     })
   })
 })
