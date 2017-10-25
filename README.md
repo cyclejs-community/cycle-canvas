@@ -123,9 +123,7 @@ import 'rxjs'
 
 function main (sources) {
   const canvasClick$ = sources.Canvas.events('click')
-
-	const counter$ = canvasClick$.startWith(0).scan(counter => counter + 1)
-
+  const counter$ = canvasClick$.startWith(0).scan(counter => counter + 1)
   return {
     Canvas: counter$.map(counter =>
       rect({
