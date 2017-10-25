@@ -74,6 +74,10 @@ You can find the source for flappy bird [here](https://github.com/cyclejs-commun
 
 - [`makeCanvasDriver`](#makeCanvasDriver)
 
+#### Using event streams of the canvas element
+
+- [`sources.Canvas.events`](#events)
+
 #### Drawing shapes and text
 
 - [`rect`](#rect)
@@ -105,6 +109,48 @@ The input to this driver is a stream of drawing instructions and transformations
 - `selector: string` a css selector to use in order to find a canvas to attach the driver to.
 - `canvasSize: {width: integer, height: integer}` an object that denotes the size to set for the attached canvas. If null, the driver attaches to its canvas without altering its size.
 
+## Using event streams of the canvas element
+
+### <a id="events"></a> `sources.Canvas.events(eventName)`
+
+Canvas driver exposes a source object with an `events` method, which works similarly to the `events` method of the DOM driver.
+
+#### Example:
+```js
+import {run} from '@cycle/rxjs-run';
+import {makeCanvasDriver, rect, text} from 'cycle-canvas';
+import 'rxjs'
+
+function main (sources) {
+  const canvasClick$ = sources.Canvas.events('click')
+
+	const counter$ = canvasClick$.startWith(0).scan(counter => counter + 1)
+
+  return {
+    Canvas: counter$.map(counter =>
+      rect({
+        children: [
+          text({
+            x: 15,
+            y: 25,
+            value: `Canvas was clicked ${counter} times`,
+            font: '18pt Arial',
+            draw: [
+              {fill: 'black'}
+            ]
+          })
+        ]
+      })
+    )
+  };
+}
+
+const drivers = {
+  Canvas: makeCanvasDriver(null, {width: 800, height: 600})
+};
+
+run(main, drivers);
+```
 
 ## Drawing shapes and text
 

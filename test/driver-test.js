@@ -2,7 +2,7 @@
 import {translateVtreeToInstructions, renderInstructionsToCanvas, rect, line, arc, text, polygon, image, makeCanvasDriver} from '../src/canvas-driver'
 import assert from 'assert'
 import root from 'window-or-global'
-import { JSDOM } from 'jsdom'
+import {JSDOM} from 'jsdom'
 import xs from 'xstream'
 
 function methodSpy () {

@@ -441,7 +441,7 @@ export function makeCanvasDriver (selector, canvasSize = null) {
     })
 
     return {
-      events: eventName => fromEvent(canvas, eventName)
+      events: eventName => adapt(fromEvent(canvas, eventName))
     }
   }
 
